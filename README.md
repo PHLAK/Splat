@@ -54,30 +54,66 @@ contain one or more of the following special matching expressions.
   
 ### Exact Match
 
+Test if a string matches the glob pattern.
+
   ```php
   Glob::pattern('*.txt')->match('foo.txt'); // true
   Glob::pattern('*.txt')->match('foo.log'); // false
   ```
 
+---
+
 ### Match Start
+
+Test if a string starts with the glob pattern.
 
   ```php
   Glob::pattern('foo/*')->matchStart('foo/bar.txt'); // true
   Glob::pattern('foo/*')->matchStart('bar/foo.txt'); // false
   ```
 
+---
+
 ### Match End
+
+Test if a string ends with the glob pattern.
 
   ```php
   Glob::pattern('**.txt')->matchEnd('foo/bar.txt'); // true
   Glob::pattern('**.txt')->matchEnd('foo/bar.log'); // false
   ```
 
+---
+
 ### Match Within
+
+Test if a string contains the glob pattern.
 
   ```php
   Glob::pattern('bar')->matchWithin('foo/bar/baz.txt'); // true
   Glob::pattern('bar')->matchWithin('foo/baz/qux.txt'); // false
+  ```
+
+---
+
+### To Regular Expression
+
+Convet the glob-like pattern to a regular expression pattern.
+
+  ```php
+  Glob::pattern('foo')->toRegex(); // Returns '#^foo$#'
+  Glob::pattern('foo/bar.txt')->toRegex(); // Returns '#^foo/bar\.txt$#'
+  Glob::pattern('file.{yml,yaml}')->toRegex(); // Returns '#^file\.(yml|yaml)$#'
+  ```
+
+  You can also control line anchors via the `$options` parameter.
+
+  ```php
+  Glob::pattern('foo')->toRegex(Glob::NO_ANCHORS); // Returns '#foo#'
+  Glob::pattern('foo')->toRegex(Glob::START_ANCHOR); // Returns '#^foo#'
+  Glob::pattern('foo')->toRegex(Glob::END_ANCHOR); // Returns '#foo$#'
+  Glob::pattern('foo')->toRegex(Glob::BOTH_ANCHORS); // Returns '#^foo$#'
+  Glob::pattern('foo')->toRegex(Glob::START_ANCHOR | Glob::END_ANCHOR); // Returns '#^foo$#'
   ```
 
 Changelog

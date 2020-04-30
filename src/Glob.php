@@ -43,13 +43,13 @@ class Glob
         return (bool) preg_match($this->toRegex(), $string);
     }
 
-    /** Test if the beginning of a string matches the glob pattern. */
+    /** Test if a string starts with the glob pattern. */
     public function matchStart(string $string): bool
     {
         return (bool) preg_match($this->toRegex(self::START_ANCHOR), $string);
     }
 
-    /** Test if the end of a string matches the glob pattern. */
+    /** Test if a string ends with the glob pattern. */
     public function matchEnd(string $string): bool
     {
         return (bool) preg_match($this->toRegex(self::END_ANCHOR), $string);

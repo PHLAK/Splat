@@ -51,7 +51,9 @@ contain one or more of the following special matching expressions.
   - `[^abc]` matches any character not in the set (i.e. not `a`, `b` or `c`)
   - `[^a-c]` matches any character not in the range (i.e. not `a`, `b` or `c`)
   - `{foo,bar,baz}` matches any pattern in the set (i.e. `foo`, `bar` or `baz`)
-  
+
+---
+
 ### Exact Match
 
 Test if a string matches the glob pattern.

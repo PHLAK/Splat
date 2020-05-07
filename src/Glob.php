@@ -19,6 +19,9 @@ class Glob
     /** @var string The glob pattern */
     protected $pattern;
 
+    /** @var string The directory separator */
+    protected static $directorySeparator = DIRECTORY_SEPARATOR;
+
     /** Create a new object. */
     public function __construct(string $pattern)
     {
@@ -29,6 +32,12 @@ class Glob
     public static function pattern(string $pattern): self
     {
         return new static($pattern);
+    }
+
+    /** Set the directory separator string. */
+    public static function directorySeparator(string $separator): void
+    {
+        self::$directorySeparator = $separator;
     }
 
     /** Return the glob pattern as a string. */
@@ -85,7 +94,7 @@ class Glob
                         $pattern .= '.*';
                         ++$i;
                     } else {
-                        $pattern .= '[^/]*';
+                        $pattern .= sprintf('[^%s]*', addslashes(self::$directorySeparator));
                     }
                     break;
 

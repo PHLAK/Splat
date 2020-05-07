@@ -85,6 +85,7 @@ class GlobTest extends TestCase
     public function test_it_matches_zero_or_more_characters_excluding_slash(): void
     {
         $this->assertTrue(Glob::pattern('*')->match('foo'));
+        $this->assertTrue(Glob::pattern('*')->match('foo\\bar'));
         $this->assertTrue(Glob::pattern('*.txt')->match('foo.txt'));
         $this->assertTrue(Glob::pattern('*/*')->match('foo/bar'));
         $this->assertTrue(Glob::pattern('*/*.txt')->match('foo/bar.txt'));
@@ -218,5 +219,39 @@ class GlobTest extends TestCase
     {
         $this->assertTrue(Glob::pattern('*/bar/*')->matchWithin('foo/bar/baz.txt'));
         $this->assertFalse(Glob::pattern('*/bar/*')->matchWithin('foo/baz/qux.txt'));
+    }
+
+    public function test_it_matches_zero_or_more_characters_excluding_back_slash(): void
+    {
+        Glob::directorySeparator('\\');
+
+        $this->assertTrue(Glob::pattern('*')->match('foo'));
+        $this->assertTrue(Glob::pattern('*')->match('foo/bar'));
+        $this->assertTrue(Glob::pattern('*.txt')->match('foo.txt'));
+        $this->assertTrue(Glob::pattern('*\\\\*')->match('foo\\bar'));
+        $this->assertTrue(Glob::pattern('*\\\\*.txt')->match('foo\\bar.txt'));
+        $this->assertTrue(Glob::pattern('*\\\\*')->match('foo\\bar'));
+
+        $this->assertFalse(Glob::pattern('*')->match('foo\\bar'));
+        $this->assertFalse(Glob::pattern('*')->match('foo\\bar'));
+        $this->assertFalse(Glob::pattern('*.txt')->match('foo\\bar.txt'));
+        $this->assertFalse(Glob::pattern('*\\*')->match('foo\\bar\\baz'));
+        $this->assertFalse(Glob::pattern('*\\*.txt')->match('foo\\bar\\baz.txt'));
+    }
+
+    public function test_it_matches_zero_or_more_characeters_including_back_slash(): void
+    {
+        Glob::directorySeparator('\\');
+
+        $this->assertTrue(Glob::pattern('**')->match('foo'));
+        $this->assertTrue(Glob::pattern('**')->match('foo.txt'));
+        $this->assertTrue(Glob::pattern('**')->match('foo\bar.txt'));
+        $this->assertTrue(Glob::pattern('**')->match('foo\bar\baz.txt'));
+        $this->assertTrue(Glob::pattern('**.txt')->match('foo.txt'));
+        $this->assertTrue(Glob::pattern('**.txt')->match('foo\bar.txt'));
+        $this->assertTrue(Glob::pattern('**.txt')->match('foo\bar\baz.txt'));
+
+        $this->assertFalse(Glob::pattern('**.txt')->match('foo.bar'));
+        $this->assertFalse(Glob::pattern('**\\\\*.txt')->match('foo.txt'));
     }
 }

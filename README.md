@@ -44,8 +44,8 @@ contain one or more of the following special matching expressions.
 #### Matching Expressions
 
   - `?` matches any single character
-  - `*` matches zero or more characters excluding `/`
-  - `**` matches zero or more characters including `/`
+  - `*` matches zero or more characters excluding `/` (`\` on Windows)
+  - `**` matches zero or more characters including `/` (`\` on Windows)
   - `[abc]` matches a single character from the set (i.e. `a`, `b` or `c`)
   - `[a-c]` matches a single character in the range (i.e. `a`, `b` or `c`)
   - `[^abc]` matches any character not in the set (i.e. not `a`, `b` or `c`)

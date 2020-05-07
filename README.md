@@ -13,7 +13,7 @@
 
 ---
 
-Glob-like pattern matching and utilities.
+Glob-like file and pattern matching utility.
 
 Requirements
 ------------

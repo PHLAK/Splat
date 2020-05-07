@@ -54,6 +54,19 @@ contain one or more of the following special matching expressions.
 
 ---
 
+### Files In
+
+Get a list of files in a directory by a glob pattern.
+
+  ```php
+  Glob::pattern('**.txt')->in('some/file/path');
+
+  // Returns a Symfony Finder instance containing files matching the glob
+  // pattern. (e.g. 'foo.txt', 'foo/bar.txt', 'foo/bar/baz.txt', etc.)
+  ```
+
+---
+
 ### Exact Match
 
 Test if a string matches the glob pattern.

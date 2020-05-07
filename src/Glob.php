@@ -2,6 +2,9 @@
 
 namespace PHLAK\Utilities;
 
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
+
 class Glob
 {
     /** @const Do not add start or end anchors */
@@ -48,6 +51,14 @@ class Glob
         ], [
             '\\\\', '\\?', '\\*', '\\[', '\\]', '\\^', '\\{', '\\}', '\\,'
         ], $string);
+    }
+
+    /** Get a list of files in a directory by a glob pattern. */
+    public function in(string $path): Finder
+    {
+        return Finder::create()->in($path)->filter(function (SplFileInfo $file): bool {
+            return $this->match($file->getRelativePathname());
+        });
     }
 
     /** Test if a string matches the glob pattern. */

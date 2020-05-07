@@ -4,6 +4,8 @@ namespace Tests;
 
 use PHLAK\Utilities\Glob;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 class GlobTest extends TestCase
 {
@@ -297,5 +299,18 @@ class GlobTest extends TestCase
         ]);
 
         $this->assertEquals(['foo', 'bar.zip', 'foo/bar.png'], array_values($rejected));
+    }
+
+    public function test_it_can_return_a_list_of_files_matching_the_pattern(): void
+    {
+        $files = Glob::pattern('**.txt')->in(__DIR__ . '/_files');
+
+        $this->assertInstanceOf(Finder::class, $files);
+
+        $this->assertEquals([
+            $path = sprintf('%s/%s', __DIR__, '_files/foo.txt') => new SplFileInfo($path, '', 'foo.txt'),
+            $path = sprintf('%s/%s', __DIR__, '_files/foo/bar.txt') => new SplFileInfo($path, 'foo', 'foo/bar.txt'),
+            $path = sprintf('%s/%s', __DIR__, '_files/foo/bar/baz.txt') => new SplFileInfo($path, 'foo/bar', 'foo/bar/baz.txt'),
+        ], iterator_to_array($files));
     }
 }

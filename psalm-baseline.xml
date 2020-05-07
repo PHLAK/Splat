@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="3.11.2@d470903722cfcbc1cd04744c5491d3e6d13ec3d9">
+  <file src="src/Glob.php">
+    <ReservedWord occurrences="1">
+      <code>void</code>
+    </ReservedWord>
+  </file>
+</files>

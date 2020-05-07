@@ -60,10 +60,11 @@ Get a list of files in a directory by a glob pattern.
 
   ```php
   Glob::pattern('**.txt')->in('some/file/path');
-
-  // Returns a Symfony Finder instance containing files matching the glob
-  // pattern. (e.g. 'foo.txt', 'foo/bar.txt', 'foo/bar/baz.txt', etc.)
   ```
+
+Returns a [Symfony Finder Component](https://symfony.com/doc/current/components/finder.html)
+containing the files matching the glob pattern within the specified directory 
+(e.g. `foo.txt`, `foo/bar.txt`, `foo/bar/baz.txt`, etc.).
 
 ---
 

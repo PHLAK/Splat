@@ -272,4 +272,30 @@ class GlobTest extends TestCase
             Glob::escape('\\?*[]^{},')
         );
     }
+
+    public function test_it_can_filter_an_array(): void
+    {
+        $filtered = Glob::pattern('**.txt')->filter([
+            'foo',
+            'foo.txt',
+            'bar.zip',
+            'foo/bar.png',
+            'foo/bar.txt',
+        ]);
+
+        $this->assertEquals(['foo.txt', 'foo/bar.txt'], array_values($filtered));
+    }
+
+    public function test_it_can_reject_an_array(): void
+    {
+        $rejected = Glob::pattern('**.txt')->reject([
+            'foo',
+            'foo.txt',
+            'bar.zip',
+            'foo/bar.png',
+            'foo/bar.txt',
+        ]);
+
+        $this->assertEquals(['foo', 'bar.zip', 'foo/bar.png'], array_values($rejected));
+    }
 }

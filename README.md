@@ -98,6 +98,34 @@ Test if a string contains the glob pattern.
 
 ---
 
+### Filter an Array (of Strings)
+
+Filter an array of strings to values matching the glob pattern.
+
+  ```php
+  Glob::pattern('**.txt')->filter([
+      'foo', 'foo.txt', 'bar.zip', 'foo/bar.png', 'foo/bar.txt',
+  ]);
+
+  // Returns ['foo.txt', 'foo/bar.txt']
+  ```
+
+---
+
+### Reject an Array (of Strings)
+
+Filter an array of strings to values *not* matching the glob pattern.
+
+  ```php
+  Glob::pattern('**.txt')->reject([
+      'foo', 'foo.txt', 'bar.zip', 'foo/bar.png', 'foo/bar.txt',
+  ]);
+
+  // Returns ['foo', 'bar.zip', 'foo/bar.png']
+  ```
+
+---
+
 ### To Regular Expression
 
 Convet the glob-like pattern to a regular expression pattern.

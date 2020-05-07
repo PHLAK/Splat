@@ -74,6 +74,22 @@ class Glob
         return (bool) preg_match($this->toRegex(self::NO_ANCHORS), $string);
     }
 
+    /** Filter an array of strings to values matching the glob pattern. */
+    public function filter(array $array): array
+    {
+        return array_filter($array, function (string $string): bool {
+            return $this->match($string);
+        });
+    }
+
+    /** Filter an array of strings to values not matching the glob pattern. */
+    public function reject(array $array): array
+    {
+        return array_filter($array, function (string $string): bool {
+            return ! $this->match($string);
+        });
+    }
+
     /** Convert the glob a regular expression pattern. */
     public function toRegex(int $options = self::BOTH_ANCHORS): string
     {

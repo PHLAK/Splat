@@ -40,10 +40,14 @@ class Glob
         self::$directorySeparator = $separator;
     }
 
-    /** Return the glob pattern as a string. */
-    public function __toString(): string
+    /** Escape glob pattern characters from a string */
+    public static function escape(string $string): string
     {
-        return $this->pattern;
+        return str_replace([
+            '\\', '?', '*', '[', ']', '^', '{', '}', ','
+        ], [
+            '\\\\', '\\?', '\\*', '\\[', '\\]', '\\^', '\\{', '\\}', '\\,'
+        ], $string);
     }
 
     /** Test if a string matches the glob pattern. */
@@ -164,5 +168,11 @@ class Glob
         }
 
         return sprintf('#%s#', $pattern);
+    }
+
+    /** Return the glob pattern as a string. */
+    public function __toString(): string
+    {
+        return $this->pattern;
     }
 }

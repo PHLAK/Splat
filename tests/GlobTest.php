@@ -254,4 +254,22 @@ class GlobTest extends TestCase
         $this->assertFalse(Glob::pattern('**.txt')->match('foo.bar'));
         $this->assertFalse(Glob::pattern('**\\\\*.txt')->match('foo.txt'));
     }
+
+    public function test_it_can_escape_a_glob_string(): void
+    {
+        $this->assertEquals('\\\\', Glob::escape('\\'));
+        $this->assertEquals('\\?', Glob::escape('?'));
+        $this->assertEquals('\\*', Glob::escape('*'));
+        $this->assertEquals('\\[', Glob::escape('['));
+        $this->assertEquals('\\]', Glob::escape(']'));
+        $this->assertEquals('\\^', Glob::escape('^'));
+        $this->assertEquals('\\{', Glob::escape('{'));
+        $this->assertEquals('\\}', Glob::escape('}'));
+        $this->assertEquals('\\,', Glob::escape(','));
+
+        $this->assertEquals(
+            '\\\\\\?\\*\\[\\]\\^\\{\\}\\,',
+            Glob::escape('\\?*[]^{},')
+        );
+    }
 }

@@ -22,6 +22,9 @@ class Glob
     /** @var string The glob pattern */
     protected $pattern;
 
+    /** @var array Memoization cache */
+    private $cache = [];
+
     /** @var string The directory separator */
     protected static $directorySeparator = DIRECTORY_SEPARATOR;
 
@@ -104,6 +107,10 @@ class Glob
     /** Convert the glob a regular expression pattern. */
     public function toRegex(int $options = self::BOTH_ANCHORS): string
     {
+        if (isset($this->cache[$options])) {
+            return $this->cache[$options];
+        }
+
         $pattern = '';
         $characterGroup = 0;
         $patternGroup = 0;
@@ -194,7 +201,7 @@ class Glob
             $pattern = $pattern . '$';
         }
 
-        return sprintf('#%s#', $pattern);
+        return $this->cache[$options] = sprintf('#%s#', $pattern);
     }
 
     /** Return the glob pattern as a string. */

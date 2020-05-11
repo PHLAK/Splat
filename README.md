@@ -160,6 +160,18 @@ Convet the glob-like pattern to a regular expression pattern.
   Glob::pattern('foo')->toRegex(Glob::START_ANCHOR | Glob::END_ANCHOR); // Returns '#^foo$#'
   ```
 
+---
+
+### Escape
+
+Escape glob pattern characters from a string.
+
+  ```php
+  Glob::escape('What?'); // Returns 'What\?'
+  Glob::escape('*.{yml,yaml}'); // Returns '\*.\{yml\,yaml\}'
+  Glob::escape('[Gl]*b.txt'); // Returns '\[Gl\]\*b.txt'
+  ```
+
 Changelog
 ---------
 

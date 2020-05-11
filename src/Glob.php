@@ -43,7 +43,7 @@ class Glob
         self::$directorySeparator = $separator;
     }
 
-    /** Escape glob pattern characters from a string */
+    /** Escape glob pattern characters from a string. */
     public static function escape(string $string): string
     {
         return str_replace([

@@ -169,7 +169,7 @@ Escape glob pattern characters from a string.
   ```php
   Glob::escape('What?'); // Returns 'What\?'
   Glob::escape('*.{yml,yaml}'); // Returns '\*.\{yml\,yaml\}'
-  Glob::escape('[Gl]*b.txt'); // Returns '\[Gl\]\*b.txt'
+  Glob::escape('[Gg]l*b.txt'); // Returns '\[Gg\]l\*b.txt'
   ```
 
 Changelog
@@ -179,8 +179,6 @@ A list of changes can be found on the [GitHub Releases](https://github.com/PHLAK
 
 Troubleshooting
 ---------------
-
-See the [Common Issues](https://github.com/PHLAK/Glob/wiki/Common-Issues) page for a list of common issues and help in solving them.
 
 For general help and support join our [Spectrum Community](https://spectrum.chat/phlaknet) or reach out on [Twitter](https://twitter.com/PHLAK).
 

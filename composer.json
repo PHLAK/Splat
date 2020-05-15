@@ -1,5 +1,5 @@
 {
-    "name": "phlak/glob",
+    "name": "phlak/splat",
     "description": "Glob-like pattern matching and utilities",
     "type": "library",
     "license": "MIT",
@@ -20,7 +20,7 @@
         }
     ],
     "require": {
-        "php": ">=7.0",
+        "php": ">=7.2",
         "symfony/finder": "^5.0"
     },
     "require-dev": {
@@ -33,7 +33,7 @@
     },
     "autoload": {
         "psr-4": {
-            "PHLAK\\Utilities\\": "src/"
+            "PHLAK\\Splat\\": "src/"
         }
     },
     "autoload-dev": {

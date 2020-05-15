@@ -1,13 +1,13 @@
 <p align="center">
-  <img src="glob.svg" alt="Glob" width="50%">
+  <img src="splat.svg" alt="Splat" width="50%">
 </p>
 
 <p align="center">
-  <a href="https://github.com/PHLAK/Glob/blob/master/LICENSE"><img src="https://img.shields.io/github/license/PHLAK/Glob?style=flat-square" alt="License"></a>
+  <a href="https://github.com/PHLAK/Splat/blob/master/LICENSE"><img src="https://img.shields.io/github/license/PHLAK/Splat?style=flat-square" alt="License"></a>
   <a href="https://spectrum.chat/phlaknet"><img src="https://img.shields.io/badge/Join_the-Community-7b16ff.svg?style=flat-square" alt="Join our Community"></a>
   <a href="https://github.com/users/PHLAK/sponsorship"><img src="https://img.shields.io/badge/Become_a-Sponsor-cc4195.svg?style=flat-square" alt="Become a Sponsor"></a>
   <a href="https://paypal.me/ChrisKankiewicz"><img src="https://img.shields.io/badge/Make_a-Donation-006bb6.svg?style=flat-square" alt="One-time Donation"></a>
-  <a href="https://travis-ci.com/PHLAK/Glob"><img src="https://img.shields.io/travis/com/PHLAK/Glob/master?style=flat-square" alt="Build Status"></a>
+  <a href="https://travis-ci.com/PHLAK/Splat"><img src="https://img.shields.io/travis/com/PHLAK/Splat/master?style=flat-square" alt="Build Status"></a>
   <a href="https://styleci.io/repos/1375774"><img src="https://styleci.io/repos/1375774/shield?branch=master" alt="StyleCI"></a>
 </p>
 
@@ -18,12 +18,12 @@ Glob-like file and pattern matching utility.
 Requirements
 ------------
 
-  - [PHP](https://www.php.net/) >= 7.0
+  - [PHP](https://www.php.net/) >= 7.2
 
 Installation
 ------------
 
-    composer require phlak/glob
+    composer require phlak/splat
 
 Usage
 -------------
@@ -31,7 +31,7 @@ Usage
 ### Initialization
 
   ```php
-  use PHLAK\Utilities\Glob;
+  use PHLAK\Splat\Glob;
 
   new Glob($pattern);
   // or
@@ -175,16 +175,16 @@ Escape glob pattern characters from a string.
 Changelog
 ---------
 
-A list of changes can be found on the [GitHub Releases](https://github.com/PHLAK/Glob/releases) page.
+A list of changes can be found on the [GitHub Releases](https://github.com/PHLAK/Splat/releases) page.
 
 Troubleshooting
 ---------------
 
 For general help and support join our [Spectrum Community](https://spectrum.chat/phlaknet) or reach out on [Twitter](https://twitter.com/PHLAK).
 
-Please report bugs to the [GitHub Issue Tracker](https://github.com/PHLAK/Glob/issues).
+Please report bugs to the [GitHub Issue Tracker](https://github.com/PHLAK/Splat/issues).
 
 Copyright
 ---------
 
-This project is licensed under the [MIT License](https://github.com/PHLAK/Glob/blob/master/LICENSE).
+This project is licensed under the [MIT License](https://github.com/PHLAK/Splat/blob/master/LICENSE).

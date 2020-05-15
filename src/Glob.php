@@ -1,6 +1,6 @@
 <?php
 
-namespace PHLAK\Utilities;
+namespace PHLAK\Splat;
 
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;

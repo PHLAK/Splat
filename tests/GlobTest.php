@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use PHLAK\Utilities\Glob;
+use PHLAK\Splat\Glob;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;

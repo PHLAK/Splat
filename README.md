@@ -59,7 +59,7 @@ contain one or more of the following special matching expressions.
 
 ### Files In
 
-Get a list of files in a directory by a glob pattern.
+Get a list of files in a directory matching the glob pattern.
 
   ```php
   Glob::pattern('**.txt')->in('some/file/path');
@@ -145,7 +145,7 @@ Filter an array of strings to values *not* matching the glob pattern.
 
 ### To Regular Expression
 
-Convet the glob-like pattern to a regular expression pattern.
+Convet the glob pattern to a regular expression pattern.
 
   ```php
   Glob::pattern('foo')->toRegex(); // Returns '#^foo$#'

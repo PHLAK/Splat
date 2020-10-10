@@ -55,6 +55,17 @@ contain one or more of the following special matching expressions.
   - `[^a-c]` matches any character not in the range (i.e. not `a`, `b` or `c`)
   - `{foo,bar,baz}` matches any pattern in the set (i.e. `foo`, `bar` or `baz`)
 
+#### Assertions
+
+The following assertions can be use to assert that a string is followed by or
+not followed by another pattern. 
+
+  - `(=foo)` matches any string that also contains `foo`
+  - `(!foo)` matches any string that does not also contain `foo`
+
+For example, a pattern of `*.tar(!.{gz|xz})` will match a string ending with
+`.tar` or `.tar.bz` but not `tar.gz` or `tar.xz`.
+
 ---
 
 ### Files In

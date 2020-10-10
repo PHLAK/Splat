@@ -31,6 +31,8 @@ class GlobTest extends TestCase
         $this->assertEquals('#^.*$#', Glob::pattern('**')->toRegex());
         $this->assertEquals('#^\#$#', Glob::pattern('#')->toRegex());
         $this->assertEquals('#^\\?$#', Glob::pattern('\\?')->toRegex());
+        $this->assertEquals('#^(?=)$#', Glob::pattern('(=)')->toRegex());
+        $this->assertEquals('#^(?!)$#', Glob::pattern('(!)')->toRegex());
     }
 
     public function test_it_can_escape_glob_patterns_when_converting_to_regular_expressions(): void
@@ -57,6 +59,14 @@ class GlobTest extends TestCase
         $this->assertEquals('#^foo\^bar\.txt$#', Glob::pattern('foo^bar.txt')->toRegex());
         $this->assertEquals('#^foo,bar\.txt$#', Glob::pattern('foo,bar.txt')->toRegex());
         $this->assertEquals('#^foo/.*/[^/]*\.txt$#', Glob::pattern('foo/**/*.txt')->toRegex());
+    }
+
+    public function test_it_can_convert_a_glob_pattern_with_lookaheads(): void
+    {
+        $this->assertEquals('#^[^/]*\.txt(?=\.gz)$#', Glob::pattern('*.txt(=.gz)')->toRegex());
+        $this->assertEquals('#^[^/]*\.txt(?!\.gz)$#', Glob::pattern('*.txt(!.gz)')->toRegex());
+        $this->assertEquals('#^[^/]*\.txt(?=\.(gz|xz))$#', Glob::pattern('*.txt(=.{gz,xz})')->toRegex());
+        $this->assertEquals('#^[^/]*\.txt(?!\.(gz|xz))$#', Glob::pattern('*.txt(!.{gz,xz})')->toRegex());
     }
 
     public function test_regular_expression_start_and_end_anchors_are_configurable(): void
@@ -257,6 +267,30 @@ class GlobTest extends TestCase
         $this->assertFalse(Glob::pattern('**\\\\*.txt')->match('foo.txt'));
     }
 
+    public function test_it_can_match_a_string_with_a_lookahead(): void
+    {
+        $this->assertTrue(Glob::pattern('*.tar(=.gz)')->matchWithin('foo.tar.gz'));
+        $this->assertFalse(Glob::pattern('*.tar(=.gz)')->matchWithin('foo.tar.xz'));
+        $this->assertFalse(Glob::pattern('*.tar(=.gz)')->matchWithin('foo.tar'));
+
+        $this->assertTrue(Glob::pattern('*.tar(=.{gz,xz})')->matchWithin('foo.tar.gz'));
+        $this->assertTrue(Glob::pattern('*.tar(=.{gz,xz})')->matchWithin('foo.tar.xz'));
+        $this->assertFalse(Glob::pattern('*.tar(=.{gz,xz})')->matchWithin('foo.tar.bz'));
+        $this->assertFalse(Glob::pattern('*.tar(=.{gz,xz})')->matchWithin('foo.tar'));
+    }
+
+    public function test_it_can_match_a_string_with_a_negative_lookahead(): void
+    {
+        $this->assertTrue(Glob::pattern('*.tar(!.gz)')->matchWithin('foo.tar'));
+        $this->assertTrue(Glob::pattern('*.tar(!.gz)')->matchWithin('foo.tar.xz'));
+        $this->assertFalse(Glob::pattern('*.tar(!.gz)')->matchWithin('foo.tar.gz'));
+
+        $this->assertTrue(Glob::pattern('*.tar(!.{gz,xz})')->matchWithin('foo.tar'));
+        $this->assertTrue(Glob::pattern('*.tar(!.{gz,xz})')->matchWithin('foo.tar.bz'));
+        $this->assertFalse(Glob::pattern('*.tar(!.{gz,xz})')->matchWithin('foo.tar.gz'));
+        $this->assertFalse(Glob::pattern('*.tar(!.{gz,xz})')->matchWithin('foo.tar.xz'));
+    }
+
     public function test_it_can_escape_a_glob_string(): void
     {
         $this->assertEquals('\\\\', Glob::escape('\\'));
@@ -268,10 +302,12 @@ class GlobTest extends TestCase
         $this->assertEquals('\\{', Glob::escape('{'));
         $this->assertEquals('\\}', Glob::escape('}'));
         $this->assertEquals('\\,', Glob::escape(','));
+        $this->assertEquals('\\(', Glob::escape('('));
+        $this->assertEquals('\\)', Glob::escape(')'));
 
         $this->assertEquals(
-            '\\\\\\?\\*\\[\\]\\^\\{\\}\\,',
-            Glob::escape('\\?*[]^{},')
+            '\\\\\\?\\*\\(\\)\\[\\]\\^\\{\\}\\,',
+            Glob::escape('\\?*()[]^{},')
         );
     }
 

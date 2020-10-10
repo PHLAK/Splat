@@ -50,9 +50,9 @@ class Glob
     public static function escape(string $string): string
     {
         return str_replace([
-            '\\', '?', '*', '[', ']', '^', '{', '}', ','
+            '\\', '?', '*', '(', ')',  '[', ']', '^', '{', '}', ','
         ], [
-            '\\\\', '\\?', '\\*', '\\[', '\\]', '\\^', '\\{', '\\}', '\\,'
+            '\\\\', '\\?', '\\*', '\\(', '\\)',  '\\[', '\\]', '\\^', '\\{', '\\}', '\\,'
         ], $string);
     }
 
@@ -113,6 +113,7 @@ class Glob
 
         $pattern = '';
         $characterGroup = 0;
+        $lookaheadGroup = 0;
         $patternGroup = 0;
 
         for ($i = 0; $i < strlen($this->pattern); ++$i) {
@@ -183,8 +184,27 @@ class Glob
                     }
                     break;
 
+                case '(':
+                    if (isset($this->pattern[$i + 1]) && in_array($this->pattern[$i + 1], ['=', '!'])) {
+                        $pattern .= sprintf('(?%s', $this->pattern[++$i]);
+                        ++$lookaheadGroup;
+                    } else {
+                        $pattern .= '\\' . $char;
+                    }
+                    break;
+
+                case ')':
+                    if ($lookaheadGroup > 0) {
+                        --$lookaheadGroup;
+                        $pattern .= $char;
+                    } else {
+                        $pattern .= '\\' . $char;
+                    }
+
+                    break;
+
                 default:
-                    if (in_array($char, ['.', '(', ')', '|', '+', '$'])) {
+                    if (in_array($char, ['.', '|', '+', '$'])) {
                         $pattern .= '\\' . $char;
                     } else {
                         $pattern .= $char;

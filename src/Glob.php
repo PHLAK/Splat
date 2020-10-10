@@ -43,7 +43,7 @@ class Glob
     /** Set the directory separator string. */
     public static function directorySeparator(string $separator): void
     {
-        self::$directorySeparator = $separator;
+        static::$directorySeparator = $separator;
     }
 
     /** Escape glob pattern characters from a string. */
@@ -133,7 +133,7 @@ class Glob
                         $pattern .= '.*';
                         ++$i;
                     } else {
-                        $pattern .= sprintf('[^%s]*', addslashes(self::$directorySeparator));
+                        $pattern .= sprintf('[^%s]*', addslashes(static::$directorySeparator));
                     }
                     break;
 

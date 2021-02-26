@@ -22,16 +22,22 @@ class Glob
     /** @var string The glob pattern */
     protected $pattern;
 
-    /** @var array Memoization cache */
-    private $cache = [];
-
     /** @var string The directory separator */
     protected static $directorySeparator = DIRECTORY_SEPARATOR;
+
+    /** @var array Memoization cache */
+    private $cache = [];
 
     /** Create a new object. */
     public function __construct(string $pattern)
     {
         $this->pattern = $pattern;
+    }
+
+    /** Return the glob pattern as a string. */
+    public function __toString(): string
+    {
+        return $this->pattern;
     }
 
     /** Create a new object from a glob pattern. */
@@ -50,9 +56,9 @@ class Glob
     public static function escape(string $string): string
     {
         return str_replace([
-            '\\', '?', '*', '(', ')',  '[', ']', '^', '{', '}', ','
+            '\\', '?', '*', '(', ')',  '[', ']', '^', '{', '}', ',',
         ], [
-            '\\\\', '\\?', '\\*', '\\(', '\\)',  '\\[', '\\]', '\\^', '\\{', '\\}', '\\,'
+            '\\\\', '\\?', '\\*', '\\(', '\\)',  '\\[', '\\]', '\\^', '\\{', '\\}', '\\,',
         ], $string);
     }
 
@@ -122,10 +128,12 @@ class Glob
             switch ($char) {
                 case '\\':
                     $pattern .= '\\' . $this->pattern[++$i];
+
                     break;
 
                 case '?':
                     $pattern .= '.';
+
                     break;
 
                 case '*':
@@ -135,15 +143,18 @@ class Glob
                     } else {
                         $pattern .= sprintf('[^%s]*', addslashes(static::$directorySeparator));
                     }
+
                     break;
 
                 case '#':
                     $pattern .= '\#';
+
                     break;
 
                 case '[':
                     $pattern .= $char;
                     ++$characterGroup;
+
                     break;
 
                 case ']':
@@ -152,6 +163,7 @@ class Glob
                     }
 
                     $pattern .= $char;
+
                     break;
 
                 case '^':
@@ -160,11 +172,13 @@ class Glob
                     } else {
                         $pattern .= '\\' . $char;
                     }
+
                     break;
 
                 case '{':
                     $pattern .= '(';
                     ++$patternGroup;
+
                     break;
 
                 case '}':
@@ -174,6 +188,7 @@ class Glob
                     } else {
                         $pattern .= $char;
                     }
+
                     break;
 
                 case ',':
@@ -182,6 +197,7 @@ class Glob
                     } else {
                         $pattern .= $char;
                     }
+
                     break;
 
                 case '(':
@@ -191,6 +207,7 @@ class Glob
                     } else {
                         $pattern .= '\\' . $char;
                     }
+
                     break;
 
                 case ')':
@@ -209,6 +226,7 @@ class Glob
                     } else {
                         $pattern .= $char;
                     }
+
                     break;
             }
         }
@@ -222,11 +240,5 @@ class Glob
         }
 
         return $this->cache[$options] = sprintf('#%s#', $pattern);
-    }
-
-    /** Return the glob pattern as a string. */
-    public function __toString(): string
-    {
-        return $this->pattern;
     }
 }

@@ -10,9 +10,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Validate Composer Files
-        run: composer validate
-
       - name: Install PHP Dependencies
         run: composer update
 
@@ -26,9 +23,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-
-      - name: Validate Composer Files
-        run: composer validate
 
       - name: Install PHP Dependencies
         run: composer update
@@ -53,20 +47,6 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           coverage: xdebug
-
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-
-      - name: Cache PHP Dependencies
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Validate Composer Files
-        run: composer validate
 
       - name: Install PHP Dependencies
         run: composer update

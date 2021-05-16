@@ -3,322 +3,230 @@
 namespace Tests;
 
 use PHLAK\Splat\Glob;
-use PHPUnit\Framework\TestCase;
+use PHLAK\Splat\Pattern;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
+/** @covers \PHLAK\Splat\Glob */
 class GlobTest extends TestCase
 {
-    public function test_it_is_stringable(): void
-    {
-        $this->assertEquals('foo.txt', (string) Glob::pattern('foo.txt'));
-        $this->assertEquals('**.txt', (string) Glob::pattern('**.txt'));
-        $this->assertEquals('foo.{yml,yaml}', (string) Glob::pattern('foo.{yml,yaml}'));
-    }
-
-    public function test_it_can_convert_a_litteral_string_to_a_regular_expression(): void
-    {
-        $this->assertEquals('#^foo$#', Glob::pattern('foo')->toRegex());
-        $this->assertEquals('#^foo/bar$#', Glob::pattern('foo/bar')->toRegex());
-        $this->assertEquals('#^foo/bar\.txt$#', Glob::pattern('foo/bar.txt')->toRegex());
-    }
-
-    public function test_it_converts_glob_patterns_to_regular_expression_patterns(): void
-    {
-        $this->assertEquals('#^$#', Glob::pattern('')->toRegex());
-        $this->assertEquals('#^.$#', Glob::pattern('?')->toRegex());
-        $this->assertEquals('#^[^/]*$#', Glob::pattern('*')->toRegex());
-        $this->assertEquals('#^.*$#', Glob::pattern('**')->toRegex());
-        $this->assertEquals('#^\#$#', Glob::pattern('#')->toRegex());
-        $this->assertEquals('#^\\?$#', Glob::pattern('\\?')->toRegex());
-        $this->assertEquals('#^(?=)$#', Glob::pattern('(=)')->toRegex());
-        $this->assertEquals('#^(?!)$#', Glob::pattern('(!)')->toRegex());
-    }
-
-    public function test_it_can_escape_glob_patterns_when_converting_to_regular_expressions(): void
-    {
-        $this->assertEquals('#^\\\\$#', Glob::pattern('\\\\')->toRegex());
-        $this->assertEquals('#^\\?$#', Glob::pattern('\?')->toRegex());
-        $this->assertEquals('#^\\*$#', Glob::pattern('\*')->toRegex());
-        $this->assertEquals('#^\\*\\*$#', Glob::pattern('\*\*')->toRegex());
-        $this->assertEquals('#^\\#$#', Glob::pattern('\#')->toRegex());
-    }
-
-    public function test_it_can_convert_a_complex_glob_pattern_to_a_regular_expressions(): void
-    {
-        $this->assertEquals('#^foo\.txt$#', Glob::pattern('foo.txt')->toRegex());
-        $this->assertEquals('#^foo/bar\.txt$#', Glob::pattern('foo/bar.txt')->toRegex());
-        $this->assertEquals('#^foo\?bar\.txt$#', Glob::pattern('foo\?bar.txt')->toRegex());
-        $this->assertEquals('#^[^/]*\.txt$#', Glob::pattern('*.txt')->toRegex());
-        $this->assertEquals('#^.*/[^/]*\.txt$#', Glob::pattern('**/*.txt')->toRegex());
-        $this->assertEquals('#^([^/]*|.*/[^/]*)\.txt$#', Glob::pattern('{*,**/*}.txt')->toRegex());
-        $this->assertEquals('#^file\.(yml|yaml)$#', Glob::pattern('file.{yml,yaml}')->toRegex());
-        $this->assertEquals('#^[fbw]oo\.txt$#', Glob::pattern('[fbw]oo.txt')->toRegex());
-        $this->assertEquals('#^[^fbw]oo\.txt$#', Glob::pattern('[^fbw]oo.txt')->toRegex());
-        $this->assertEquals('#^foo}bar\.txt$#', Glob::pattern('foo}bar.txt')->toRegex());
-        $this->assertEquals('#^foo\^bar\.txt$#', Glob::pattern('foo^bar.txt')->toRegex());
-        $this->assertEquals('#^foo,bar\.txt$#', Glob::pattern('foo,bar.txt')->toRegex());
-        $this->assertEquals('#^foo/.*/[^/]*\.txt$#', Glob::pattern('foo/**/*.txt')->toRegex());
-    }
-
-    public function test_it_can_convert_a_glob_pattern_with_lookaheads(): void
-    {
-        $this->assertEquals('#^[^/]*\.txt(?=\.gz)$#', Glob::pattern('*.txt(=.gz)')->toRegex());
-        $this->assertEquals('#^[^/]*\.txt(?!\.gz)$#', Glob::pattern('*.txt(!.gz)')->toRegex());
-        $this->assertEquals('#^[^/]*\.txt(?=\.(gz|xz))$#', Glob::pattern('*.txt(=.{gz,xz})')->toRegex());
-        $this->assertEquals('#^[^/]*\.txt(?!\.(gz|xz))$#', Glob::pattern('*.txt(!.{gz,xz})')->toRegex());
-    }
-
-    public function test_regular_expression_start_and_end_anchors_are_configurable(): void
-    {
-        $this->assertEquals('#foo#', Glob::pattern('foo')->toRegex(Glob::NO_ANCHORS));
-        $this->assertEquals('#^foo#', Glob::pattern('foo')->toRegex(Glob::START_ANCHOR));
-        $this->assertEquals('#foo$#', Glob::pattern('foo')->toRegex(Glob::END_ANCHOR));
-        $this->assertEquals('#^foo$#', Glob::pattern('foo')->toRegex(Glob::BOTH_ANCHORS));
-        $this->assertEquals('#^foo$#', Glob::pattern('foo')->toRegex(Glob::START_ANCHOR | Glob::END_ANCHOR));
-    }
-
     public function test_it_matches_a_literal_value(): void
     {
-        $this->assertTrue(Glob::pattern('foo')->match('foo'));
-        $this->assertFalse(Glob::pattern('bar')->match('foo'));
+        $this->assertTrue(Glob::match('foo', 'foo'));
+        $this->assertFalse(Glob::match('bar', 'foo'));
     }
 
     public function test_it_matches_a_single_character(): void
     {
-        $this->assertTrue(Glob::pattern('?')->match('f'));
-        $this->assertTrue(Glob::pattern('??')->match('fo'));
-        $this->assertTrue(Glob::pattern('???')->match('foo'));
+        $this->assertTrue(Glob::match('?', 'f'));
+        $this->assertTrue(Glob::match('??', 'fo'));
+        $this->assertTrue(Glob::match('???', 'foo'));
 
-        $this->assertFalse(Glob::pattern('?')->match('foo'));
-        $this->assertFalse(Glob::pattern('???')->match('f'));
+        $this->assertFalse(Glob::match('?', 'foo'));
+        $this->assertFalse(Glob::match('???', 'f'));
     }
 
     public function test_it_matches_zero_or_more_characters_excluding_slash(): void
     {
-        $this->assertTrue(Glob::pattern('*')->match('foo'));
-        $this->assertTrue(Glob::pattern('*')->match('foo\\bar'));
-        $this->assertTrue(Glob::pattern('*.txt')->match('foo.txt'));
-        $this->assertTrue(Glob::pattern('*/*')->match('foo/bar'));
-        $this->assertTrue(Glob::pattern('*/*.txt')->match('foo/bar.txt'));
+        $this->assertTrue(Glob::match('*', 'foo'));
+        $this->assertTrue(Glob::match('*', 'foo\\bar'));
+        $this->assertTrue(Glob::match('*.txt', 'foo.txt'));
+        $this->assertTrue(Glob::match('*/*', 'foo/bar'));
+        $this->assertTrue(Glob::match('*/*.txt', 'foo/bar.txt'));
 
-        $this->assertFalse(Glob::pattern('*')->match('foo/bar'));
-        $this->assertFalse(Glob::pattern('*.txt')->match('foo/bar.txt'));
-        $this->assertFalse(Glob::pattern('*/*')->match('foo/bar/baz'));
-        $this->assertFalse(Glob::pattern('*/*.txt')->match('foo/bar/baz.txt'));
+        $this->assertFalse(Glob::match('*', 'foo/bar'));
+        $this->assertFalse(Glob::match('*.txt', 'foo/bar.txt'));
+        $this->assertFalse(Glob::match('*/*', 'foo/bar/baz'));
+        $this->assertFalse(Glob::match('*/*.txt', 'foo/bar/baz.txt'));
     }
 
     public function test_it_matches_zero_or_more_characeters_including_slash(): void
     {
-        $this->assertTrue(Glob::pattern('**')->match('foo'));
-        $this->assertTrue(Glob::pattern('**')->match('foo.txt'));
-        $this->assertTrue(Glob::pattern('**')->match('foo/bar.txt'));
-        $this->assertTrue(Glob::pattern('**')->match('foo/bar/baz.txt'));
-        $this->assertTrue(Glob::pattern('**.txt')->match('foo.txt'));
-        $this->assertTrue(Glob::pattern('**.txt')->match('foo/bar.txt'));
-        $this->assertTrue(Glob::pattern('**.txt')->match('foo/bar/baz.txt'));
+        $this->assertTrue(Glob::match('**', 'foo'));
+        $this->assertTrue(Glob::match('**', 'foo.txt'));
+        $this->assertTrue(Glob::match('**', 'foo/bar.txt'));
+        $this->assertTrue(Glob::match('**', 'foo/bar/baz.txt'));
+        $this->assertTrue(Glob::match('**.txt', 'foo.txt'));
+        $this->assertTrue(Glob::match('**.txt', 'foo/bar.txt'));
+        $this->assertTrue(Glob::match('**.txt', 'foo/bar/baz.txt'));
 
-        $this->assertFalse(Glob::pattern('**.txt')->match('foo.bar'));
-        $this->assertFalse(Glob::pattern('**/*.txt')->match('foo.txt'));
+        $this->assertFalse(Glob::match('**.txt', 'foo.bar'));
+        $this->assertFalse(Glob::match('**/*.txt', 'foo.txt'));
     }
 
     public function test_it_matches_a_single_character_from_a_set(): void
     {
-        $this->assertTrue(Glob::pattern('[abc]')->match('a'));
-        $this->assertTrue(Glob::pattern('[abc]')->match('b'));
-        $this->assertTrue(Glob::pattern('[abc]')->match('c'));
+        $this->assertTrue(Glob::match('[abc]', 'a'));
+        $this->assertTrue(Glob::match('[abc]', 'b'));
+        $this->assertTrue(Glob::match('[abc]', 'c'));
 
-        $this->assertTrue(Glob::pattern('[abc][abc]')->match('ab'));
-        $this->assertTrue(Glob::pattern('[abc][abc]')->match('bc'));
-        $this->assertTrue(Glob::pattern('[abc][abc]')->match('ca'));
+        $this->assertTrue(Glob::match('[abc][abc]', 'ab'));
+        $this->assertTrue(Glob::match('[abc][abc]', 'bc'));
+        $this->assertTrue(Glob::match('[abc][abc]', 'ca'));
 
-        $this->assertTrue(Glob::pattern('[bfg]oo')->match('foo'));
-        $this->assertTrue(Glob::pattern('[bfg]oo')->match('boo'));
-        $this->assertTrue(Glob::pattern('[bfg]oo')->match('goo'));
+        $this->assertTrue(Glob::match('[bfg]oo', 'foo'));
+        $this->assertTrue(Glob::match('[bfg]oo', 'boo'));
+        $this->assertTrue(Glob::match('[bfg]oo', 'goo'));
 
-        $this->assertFalse(Glob::pattern('[abc]')->match('abc'));
-        $this->assertFalse(Glob::pattern('[bfg]oo')->match('zoo'));
-        $this->assertFalse(Glob::pattern('[bfg]oo')->match('bar'));
-        $this->assertFalse(Glob::pattern('[abc][abc]')->match('abc'));
+        $this->assertFalse(Glob::match('[abc]', 'abc'));
+        $this->assertFalse(Glob::match('[bfg]oo', 'zoo'));
+        $this->assertFalse(Glob::match('[bfg]oo', 'bar'));
+        $this->assertFalse(Glob::match('[abc][abc]', 'abc'));
     }
 
     public function test_it_matches_a_single_character_in_a_range(): void
     {
-        $this->assertTrue(Glob::pattern('[a-c]')->match('a'));
-        $this->assertTrue(Glob::pattern('[a-c]')->match('b'));
-        $this->assertTrue(Glob::pattern('[a-c]')->match('c'));
+        $this->assertTrue(Glob::match('[a-c]', 'a'));
+        $this->assertTrue(Glob::match('[a-c]', 'b'));
+        $this->assertTrue(Glob::match('[a-c]', 'c'));
 
-        $this->assertTrue(Glob::pattern('[a-c][a-c]')->match('ab'));
-        $this->assertTrue(Glob::pattern('[a-c][a-c]')->match('bc'));
-        $this->assertTrue(Glob::pattern('[a-c][a-c]')->match('ca'));
+        $this->assertTrue(Glob::match('[a-c][a-c]', 'ab'));
+        $this->assertTrue(Glob::match('[a-c][a-c]', 'bc'));
+        $this->assertTrue(Glob::match('[a-c][a-c]', 'ca'));
 
-        $this->assertTrue(Glob::pattern('[f-h]oo')->match('foo'));
-        $this->assertTrue(Glob::pattern('[f-h]oo')->match('goo'));
-        $this->assertTrue(Glob::pattern('[f-h]oo')->match('hoo'));
+        $this->assertTrue(Glob::match('[f-h]oo', 'foo'));
+        $this->assertTrue(Glob::match('[f-h]oo', 'goo'));
+        $this->assertTrue(Glob::match('[f-h]oo', 'hoo'));
 
-        $this->assertFalse(Glob::pattern('[a-c]')->match('abc'));
-        $this->assertFalse(Glob::pattern('[f-h]oo')->match('zoo'));
-        $this->assertFalse(Glob::pattern('[a-c]oo')->match('bar'));
-        $this->assertFalse(Glob::pattern('[a-c][a-c]')->match('abc'));
+        $this->assertFalse(Glob::match('[a-c]', 'abc'));
+        $this->assertFalse(Glob::match('[f-h]oo', 'zoo'));
+        $this->assertFalse(Glob::match('[a-c]oo', 'bar'));
+        $this->assertFalse(Glob::match('[a-c][a-c]', 'abc'));
     }
 
     public function test_it_mathes_any_character_not_in_a_set(): void
     {
-        $this->assertTrue(Glob::pattern('[^abc]')->match('x'));
-        $this->assertTrue(Glob::pattern('[^abc]')->match('z'));
+        $this->assertTrue(Glob::match('[^abc]', 'x'));
+        $this->assertTrue(Glob::match('[^abc]', 'z'));
 
-        $this->assertTrue(Glob::pattern('[^abc][^xyz]')->match('za'));
-        $this->assertTrue(Glob::pattern('[^abc][^xyz]')->match('ya'));
+        $this->assertTrue(Glob::match('[^abc][^xyz]', 'za'));
+        $this->assertTrue(Glob::match('[^abc][^xyz]', 'ya'));
 
-        $this->assertTrue(Glob::pattern('[^abc]oo')->match('foo'));
-        $this->assertTrue(Glob::pattern('[^abc]oo')->match('zoo'));
+        $this->assertTrue(Glob::match('[^abc]oo', 'foo'));
+        $this->assertTrue(Glob::match('[^abc]oo', 'zoo'));
 
-        $this->assertFalse(Glob::pattern('[^abc]')->match('a'));
-        $this->assertFalse(Glob::pattern('[^abc]')->match('b'));
-        $this->assertFalse(Glob::pattern('[^abc]')->match('c'));
-        $this->assertFalse(Glob::pattern('[^abc]oo')->match('boo'));
-        $this->assertFalse(Glob::pattern('[^abc][^xyz]')->match('cz'));
-        $this->assertFalse(Glob::pattern('[^abc][^xyz]')->match('foo'));
+        $this->assertFalse(Glob::match('[^abc]', 'a'));
+        $this->assertFalse(Glob::match('[^abc]', 'b'));
+        $this->assertFalse(Glob::match('[^abc]', 'c'));
+        $this->assertFalse(Glob::match('[^abc]oo', 'boo'));
+        $this->assertFalse(Glob::match('[^abc][^xyz]', 'cz'));
+        $this->assertFalse(Glob::match('[^abc][^xyz]', 'foo'));
     }
 
     public function test_it_matches_any_character_not_in_a_range(): void
     {
-        $this->assertTrue(Glob::pattern('[^a-c]')->match('x'));
-        $this->assertTrue(Glob::pattern('[^a-c]')->match('z'));
+        $this->assertTrue(Glob::match('[^a-c]', 'x'));
+        $this->assertTrue(Glob::match('[^a-c]', 'z'));
 
-        $this->assertTrue(Glob::pattern('[^a-c][^x-z]')->match('za'));
-        $this->assertTrue(Glob::pattern('[^a-c][^x-z]')->match('ya'));
+        $this->assertTrue(Glob::match('[^a-c][^x-z]', 'za'));
+        $this->assertTrue(Glob::match('[^a-c][^x-z]', 'ya'));
 
-        $this->assertTrue(Glob::pattern('[^a-c]oo')->match('foo'));
-        $this->assertTrue(Glob::pattern('[^a-c]oo')->match('zoo'));
+        $this->assertTrue(Glob::match('[^a-c]oo', 'foo'));
+        $this->assertTrue(Glob::match('[^a-c]oo', 'zoo'));
 
-        $this->assertFalse(Glob::pattern('[^a-c]')->match('a'));
-        $this->assertFalse(Glob::pattern('[^a-c]')->match('b'));
-        $this->assertFalse(Glob::pattern('[^a-c]')->match('c'));
-        $this->assertFalse(Glob::pattern('[^a-c]oo')->match('boo'));
-        $this->assertFalse(Glob::pattern('[^a-c][^x-z]')->match('cz'));
-        $this->assertFalse(Glob::pattern('[^a-c][^x-z]')->match('foo'));
+        $this->assertFalse(Glob::match('[^a-c]', 'a'));
+        $this->assertFalse(Glob::match('[^a-c]', 'b'));
+        $this->assertFalse(Glob::match('[^a-c]', 'c'));
+        $this->assertFalse(Glob::match('[^a-c]oo', 'boo'));
+        $this->assertFalse(Glob::match('[^a-c][^x-z]', 'cz'));
+        $this->assertFalse(Glob::match('[^a-c][^x-z]', 'foo'));
     }
 
     public function test_it_matches_a_pattern_from_a_set(): void
     {
-        $this->assertTrue(Glob::pattern('{foo,bar,baz}')->match('foo'));
-        $this->assertTrue(Glob::pattern('{foo,bar,baz}')->match('bar'));
-        $this->assertTrue(Glob::pattern('{foo,bar,baz}')->match('baz'));
+        $this->assertTrue(Glob::match('{foo,bar,baz}', 'foo'));
+        $this->assertTrue(Glob::match('{foo,bar,baz}', 'bar'));
+        $this->assertTrue(Glob::match('{foo,bar,baz}', 'baz'));
 
-        $this->assertTrue(Glob::pattern('foo/{bar,baz}/qux')->match('foo/bar/qux'));
-        $this->assertTrue(Glob::pattern('foo/{bar,baz}/qux')->match('foo/baz/qux'));
+        $this->assertTrue(Glob::match('foo/{bar,baz}/qux', 'foo/bar/qux'));
+        $this->assertTrue(Glob::match('foo/{bar,baz}/qux', 'foo/baz/qux'));
 
-        $this->assertTrue(Glob::pattern('foo.{yml,yaml}')->match('foo.yml'));
-        $this->assertTrue(Glob::pattern('foo.{yml,yaml}')->match('foo.yaml'));
+        $this->assertTrue(Glob::match('foo.{yml,yaml}', 'foo.yml'));
+        $this->assertTrue(Glob::match('foo.{yml,yaml}', 'foo.yaml'));
 
-        $this->assertFalse(Glob::pattern('{foo,bar,baz}')->match('qux'));
+        $this->assertFalse(Glob::match('{foo,bar,baz}', 'qux'));
     }
 
     public function test_it_matches_the_start_of_a_string(): void
     {
-        $this->assertTrue(Glob::pattern('foo/*')->matchStart('foo/bar.txt'));
-        $this->assertFalse(Glob::pattern('foo/*')->matchStart('bar/foo.txt'));
+        $this->assertTrue(Glob::matchStart('foo/*', 'foo/bar.txt'));
+        $this->assertFalse(Glob::matchStart('foo/*', 'bar/foo.txt'));
     }
 
     public function test_it_matches_the_end_of_a_string(): void
     {
-        $this->assertTrue(Glob::pattern('**.txt')->matchEnd('foo/bar.txt'));
-        $this->assertFalse(Glob::pattern('**.txt')->matchEnd('foo/bar.log'));
+        $this->assertTrue(Glob::matchEnd('**.txt', 'foo/bar.txt'));
+        $this->assertFalse(Glob::matchEnd('**.txt', 'foo/bar.log'));
     }
 
     public function test_it_matches_within_a_string(): void
     {
-        $this->assertTrue(Glob::pattern('*/bar/*')->matchWithin('foo/bar/baz.txt'));
-        $this->assertFalse(Glob::pattern('*/bar/*')->matchWithin('foo/baz/qux.txt'));
+        $this->assertTrue(Glob::matchWithin('*/bar/*', 'foo/bar/baz.txt'));
+        $this->assertFalse(Glob::matchWithin('*/bar/*', 'foo/baz/qux.txt'));
     }
 
     public function test_it_matches_zero_or_more_characters_excluding_back_slash(): void
     {
-        Glob::directorySeparator('\\');
+        Pattern::directorySeparator('\\');
 
-        $this->assertTrue(Glob::pattern('*')->match('foo'));
-        $this->assertTrue(Glob::pattern('*')->match('foo/bar'));
-        $this->assertTrue(Glob::pattern('*.txt')->match('foo.txt'));
-        $this->assertTrue(Glob::pattern('*\\\\*')->match('foo\\bar'));
-        $this->assertTrue(Glob::pattern('*\\\\*.txt')->match('foo\\bar.txt'));
-        $this->assertTrue(Glob::pattern('*\\\\*')->match('foo\\bar'));
+        $this->assertTrue(Glob::match('*', 'foo'));
+        $this->assertTrue(Glob::match('*', 'foo/bar'));
+        $this->assertTrue(Glob::match('*.txt', 'foo.txt'));
+        $this->assertTrue(Glob::match('*\\\\*', 'foo\\bar'));
+        $this->assertTrue(Glob::match('*\\\\*.txt', 'foo\\bar.txt'));
+        $this->assertTrue(Glob::match('*\\\\*', 'foo\\bar'));
 
-        $this->assertFalse(Glob::pattern('*')->match('foo\\bar'));
-        $this->assertFalse(Glob::pattern('*')->match('foo\\bar'));
-        $this->assertFalse(Glob::pattern('*.txt')->match('foo\\bar.txt'));
-        $this->assertFalse(Glob::pattern('*\\*')->match('foo\\bar\\baz'));
-        $this->assertFalse(Glob::pattern('*\\*.txt')->match('foo\\bar\\baz.txt'));
+        $this->assertFalse(Glob::match('*', 'foo\\bar'));
+        $this->assertFalse(Glob::match('*', 'foo\\bar'));
+        $this->assertFalse(Glob::match('*.txt', 'foo\\bar.txt'));
+        $this->assertFalse(Glob::match('*\\*', 'foo\\bar\\baz'));
+        $this->assertFalse(Glob::match('*\\*.txt', 'foo\\bar\\baz.txt'));
     }
 
     public function test_it_matches_zero_or_more_characeters_including_back_slash(): void
     {
-        Glob::directorySeparator('\\');
+        Pattern::directorySeparator('\\');
 
-        $this->assertTrue(Glob::pattern('**')->match('foo'));
-        $this->assertTrue(Glob::pattern('**')->match('foo.txt'));
-        $this->assertTrue(Glob::pattern('**')->match('foo\bar.txt'));
-        $this->assertTrue(Glob::pattern('**')->match('foo\bar\baz.txt'));
-        $this->assertTrue(Glob::pattern('**.txt')->match('foo.txt'));
-        $this->assertTrue(Glob::pattern('**.txt')->match('foo\bar.txt'));
-        $this->assertTrue(Glob::pattern('**.txt')->match('foo\bar\baz.txt'));
+        $this->assertTrue(Glob::match('**', 'foo'));
+        $this->assertTrue(Glob::match('**', 'foo.txt'));
+        $this->assertTrue(Glob::match('**', 'foo\bar.txt'));
+        $this->assertTrue(Glob::match('**', 'foo\bar\baz.txt'));
+        $this->assertTrue(Glob::match('**.txt', 'foo.txt'));
+        $this->assertTrue(Glob::match('**.txt', 'foo\bar.txt'));
+        $this->assertTrue(Glob::match('**.txt', 'foo\bar\baz.txt'));
 
-        $this->assertFalse(Glob::pattern('**.txt')->match('foo.bar'));
-        $this->assertFalse(Glob::pattern('**\\\\*.txt')->match('foo.txt'));
+        $this->assertFalse(Glob::match('**.txt', 'foo.bar'));
+        $this->assertFalse(Glob::match('**\\\\*.txt', 'foo.txt'));
     }
 
     public function test_it_can_match_a_string_with_a_lookahead(): void
     {
-        $this->assertTrue(Glob::pattern('*.tar(=.gz)')->matchWithin('foo.tar.gz'));
-        $this->assertFalse(Glob::pattern('*.tar(=.gz)')->matchWithin('foo.tar.xz'));
-        $this->assertFalse(Glob::pattern('*.tar(=.gz)')->matchWithin('foo.tar'));
+        $this->assertTrue(Glob::matchWithin('*.tar(=.gz)', 'foo.tar.gz'));
+        $this->assertFalse(Glob::matchWithin('*.tar(=.gz)', 'foo.tar.xz'));
+        $this->assertFalse(Glob::matchWithin('*.tar(=.gz)', 'foo.tar'));
 
-        $this->assertTrue(Glob::pattern('*.tar(=.{gz,xz})')->matchWithin('foo.tar.gz'));
-        $this->assertTrue(Glob::pattern('*.tar(=.{gz,xz})')->matchWithin('foo.tar.xz'));
-        $this->assertFalse(Glob::pattern('*.tar(=.{gz,xz})')->matchWithin('foo.tar.bz'));
-        $this->assertFalse(Glob::pattern('*.tar(=.{gz,xz})')->matchWithin('foo.tar'));
+        $this->assertTrue(Glob::matchWithin('*.tar(=.{gz,xz})', 'foo.tar.gz'));
+        $this->assertTrue(Glob::matchWithin('*.tar(=.{gz,xz})', 'foo.tar.xz'));
+        $this->assertFalse(Glob::matchWithin('*.tar(=.{gz,xz})', 'foo.tar.bz'));
+        $this->assertFalse(Glob::matchWithin('*.tar(=.{gz,xz})', 'foo.tar'));
     }
 
     public function test_it_can_match_a_string_with_a_negative_lookahead(): void
     {
-        $this->assertTrue(Glob::pattern('*.tar(!.gz)')->matchWithin('foo.tar'));
-        $this->assertTrue(Glob::pattern('*.tar(!.gz)')->matchWithin('foo.tar.xz'));
-        $this->assertFalse(Glob::pattern('*.tar(!.gz)')->matchWithin('foo.tar.gz'));
+        $this->assertTrue(Glob::matchWithin('*.tar(!.gz)', 'foo.tar'));
+        $this->assertTrue(Glob::matchWithin('*.tar(!.gz)', 'foo.tar.xz'));
+        $this->assertFalse(Glob::matchWithin('*.tar(!.gz)', 'foo.tar.gz'));
 
-        $this->assertTrue(Glob::pattern('*.tar(!.{gz,xz})')->matchWithin('foo.tar'));
-        $this->assertTrue(Glob::pattern('*.tar(!.{gz,xz})')->matchWithin('foo.tar.bz'));
-        $this->assertFalse(Glob::pattern('*.tar(!.{gz,xz})')->matchWithin('foo.tar.gz'));
-        $this->assertFalse(Glob::pattern('*.tar(!.{gz,xz})')->matchWithin('foo.tar.xz'));
-    }
-
-    public function test_it_can_escape_a_glob_string(): void
-    {
-        $this->assertEquals('\\\\', Glob::escape('\\'));
-        $this->assertEquals('\\?', Glob::escape('?'));
-        $this->assertEquals('\\*', Glob::escape('*'));
-        $this->assertEquals('\\[', Glob::escape('['));
-        $this->assertEquals('\\]', Glob::escape(']'));
-        $this->assertEquals('\\^', Glob::escape('^'));
-        $this->assertEquals('\\{', Glob::escape('{'));
-        $this->assertEquals('\\}', Glob::escape('}'));
-        $this->assertEquals('\\,', Glob::escape(','));
-        $this->assertEquals('\\(', Glob::escape('('));
-        $this->assertEquals('\\)', Glob::escape(')'));
-
-        $this->assertEquals(
-            '\\\\\\?\\*\\(\\)\\[\\]\\^\\{\\}\\,',
-            Glob::escape('\\?*()[]^{},')
-        );
+        $this->assertTrue(Glob::matchWithin('*.tar(!.{gz,xz})', 'foo.tar'));
+        $this->assertTrue(Glob::matchWithin('*.tar(!.{gz,xz})', 'foo.tar.bz'));
+        $this->assertFalse(Glob::matchWithin('*.tar(!.{gz,xz})', 'foo.tar.gz'));
+        $this->assertFalse(Glob::matchWithin('*.tar(!.{gz,xz})', 'foo.tar.xz'));
     }
 
     public function test_it_can_filter_an_array(): void
     {
-        $filtered = Glob::pattern('**.txt')->filter([
-            'foo',
-            'foo.txt',
-            'bar.zip',
-            'foo/bar.png',
-            'foo/bar.txt',
+        $filtered = Glob::filter('**.txt', [
+            'foo', 'foo.txt', 'bar.zip', 'foo/bar.png', 'foo/bar.txt',
         ]);
 
         $this->assertEquals(['foo.txt', 'foo/bar.txt'], array_values($filtered));
@@ -326,12 +234,8 @@ class GlobTest extends TestCase
 
     public function test_it_can_reject_an_array(): void
     {
-        $rejected = Glob::pattern('**.txt')->reject([
-            'foo',
-            'foo.txt',
-            'bar.zip',
-            'foo/bar.png',
-            'foo/bar.txt',
+        $rejected = Glob::reject('**.txt', [
+            'foo', 'foo.txt', 'bar.zip', 'foo/bar.png', 'foo/bar.txt',
         ]);
 
         $this->assertEquals(['foo', 'bar.zip', 'foo/bar.png'], array_values($rejected));
@@ -339,7 +243,7 @@ class GlobTest extends TestCase
 
     public function test_it_can_return_a_list_of_files_matching_the_pattern(): void
     {
-        $files = Glob::pattern('**.txt')->in(__DIR__ . '/_files');
+        $files = Glob::in('**.txt', __DIR__ . '/_files');
 
         $this->assertInstanceOf(Finder::class, $files);
 

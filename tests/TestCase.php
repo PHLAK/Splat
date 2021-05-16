@@ -2,9 +2,9 @@
 
 namespace Tests;
 
-use PHPUnit\Framework\TestCase as PHPUnitTestCase;
+use Yoast\PHPUnitPolyfills\TestCases\TestCase as BaseTestCase;
 
-abstract class TestCase extends PHPUnitTestCase
+abstract class TestCase extends BaseTestCase
 {
     protected $backupStaticAttributes = true;
 }

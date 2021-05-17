@@ -3,15 +3,14 @@
 </p>
 
 <p align="center">
-  <a href="https://spectrum.chat/phlaknet"><img src="https://img.shields.io/badge/Join_the-Community-7b16ff.svg?style=for-the-badge" alt="Join our Community"></a>
-  <a href="https://github.com/users/PHLAK/sponsorship"><img src="https://img.shields.io/badge/Become_a-Sponsor-cc4195.svg?style=for-the-badge" alt="Become a Sponsor"></a>
-  <a href="https://paypal.me/ChrisKankiewicz"><img src="https://img.shields.io/badge/Make_a-Donation-006bb6.svg?style=for-the-badge" alt="One-time Donation"></a>
-  <br>
-  <a href="https://packagist.org/packages/PHLAK/Splat"><img src="https://img.shields.io/packagist/v/PHLAK/Splat.svg?style=flat-square" alt="Latest Stable Version"></a>
-  <a href="https://packagist.org/packages/PHLAK/Splat"><img src="https://img.shields.io/packagist/dt/PHLAK/Splat.svg?style=flat-square" alt="Total Downloads"></a>
-  <a href="https://github.com/PHLAK/Splat/blob/master/LICENSE"><img src="https://img.shields.io/github/license/PHLAK/Splat?style=flat-square" alt="License"></a>
-  <a href="https://travis-ci.com/PHLAK/Splat"><img src="https://img.shields.io/travis/com/PHLAK/Splat/master?style=flat-square" alt="Build Status"></a>
-  <a href="https://styleci.io/repos/260334304"><img src="https://styleci.io/repos/260334304/shield?branch=master" alt="StyleCI"></a>
+    <a href="https://github.com/PHLAK/Splat/discussions"><img src="https://img.shields.io/badge/Join_the-Community-7b16ff.svg?style=for-the-badge" alt="Join our Community"></a>
+    <a href="https://github.com/users/PHLAK/sponsorship"><img src="https://img.shields.io/badge/Become_a-Sponsor-cc4195.svg?style=for-the-badge" alt="Become a Sponsor"></a>
+    <a href="https://paypal.me/ChrisKankiewicz"><img src="https://img.shields.io/badge/Make_a-Donation-006bb6.svg?style=for-the-badge" alt="One-time Donation"></a>
+    <br>
+    <a href="https://packagist.org/packages/PHLAK/Splat"><img src="https://img.shields.io/packagist/v/PHLAK/Splat.svg?style=flat-square" alt="Latest Stable Version"></a>
+    <a href="https://packagist.org/packages/PHLAK/Splat"><img src="https://img.shields.io/packagist/dt/PHLAK/Splat.svg?style=flat-square" alt="Total Downloads"></a>
+    <a href="https://github.com/PHLAK/Splat/blob/master/LICENSE"><img src="https://img.shields.io/github/license/PHLAK/Splat?style=flat-square" alt="License"></a>
+    <a href="https://github.com/PHLAK/Splat/actions"><img alt="GitHub branch checks state" src="https://img.shields.io/github/checks-status/phlak/splat/master?style=flat-square"></a>
 </p>
 
 ---
@@ -26,25 +25,25 @@ Requirements
 Installation
 ------------
 
+Install Splat with Composer.
+
     composer require phlak/splat
 
-Usage
--------------
+Then import the `Glob` or `Pattern` classes as needed.
 
-### Initialization
+```php
+use PHLAK\Splat\Glob;
+use PHLAK\Splat\Pattern;
+```
 
-  ```php
-  use PHLAK\Splat\Glob;
+Patterns
+--------
 
-  new Glob($pattern);
-  // or
-  Glob::pattern($pattern);
-  ```
+`Glob` methods accept a `$pattern` as the first parameter. This can be a string
+or an instance of `\PHLAK\Splat\Pattern`. A pattern string may contain one or
+more of the following special matching expressions.
 
-When instantiating a `Glob` object you must supply a `$pattern` string that may
-contain one or more of the following special matching expressions.
-
-#### Matching Expressions
+### Matching Expressions
 
   - `?` matches any single character
   - `*` matches zero or more characters excluding `/` (`\` on Windows)
@@ -55,10 +54,10 @@ contain one or more of the following special matching expressions.
   - `[^a-c]` matches any character not in the range (i.e. not `a`, `b` or `c`)
   - `{foo,bar,baz}` matches any pattern in the set (i.e. `foo`, `bar` or `baz`)
 
-#### Assertions
+### Assertions
 
 The following assertions can be use to assert that a string is followed by or
-not followed by another pattern. 
+not followed by another pattern.
 
   - `(=foo)` matches any string that also contains `foo`
   - `(!foo)` matches any string that does not also contain `foo`
@@ -66,15 +65,48 @@ not followed by another pattern.
 For example, a pattern of `*.tar(!.{gz|xz})` will match a string ending with
 `.tar` or `.tar.bz` but not `tar.gz` or `tar.xz`.
 
+### Converting Patterns To Regular Expressions
+
+Convet a glob pattern to a regular expression pattern.
+
+```php
+Pattern::make('foo')->toRegex(); // Returns '#^foo$#'
+Pattern::make('foo/bar.txt')->toRegex(); // Returns '#^foo/bar\.txt$#'
+Pattern::make('file.{yml,yaml}')->toRegex(); // Returns '#^file\.(yml|yaml)$#'
+```
+
+  You can also control line anchors via the `$options` parameter.
+
+```php
+Pattern::make('foo')->toRegex(Glob::NO_ANCHORS); // Returns '#foo#'
+Pattern::make('foo')->toRegex(Glob::START_ANCHOR); // Returns '#^foo#'
+Pattern::make('foo')->toRegex(Glob::END_ANCHOR); // Returns '#foo$#'
+Pattern::make('foo')->toRegex(Glob::BOTH_ANCHORS); // Returns '#^foo$#'
+Pattern::make('foo')->toRegex(Glob::START_ANCHOR | Glob::END_ANCHOR); // Returns '#^foo$#'
+```
+
 ---
+
+### Escape
+
+Escape glob pattern characters from a string.
+
+```php
+Pattern::escape('What?'); // Returns 'What\?'
+Pattern::escape('*.{yml,yaml}'); // Returns '\*.\{yml\,yaml\}'
+Pattern::escape('[Gg]l*b.txt'); // Returns '\[Gg\]l\*b.txt'
+```
+
+Methods
+-------
 
 ### Files In
 
-Get a list of files in a directory matching the glob pattern.
+Get a list of files in a directory matching a glob pattern.
 
-  ```php
-  Glob::pattern('**.txt')->in('some/file/path');
-  ```
+```php
+Glob::in('**.txt', 'some/file/path');
+```
 
 Returns a [Symfony Finder Component](https://symfony.com/doc/current/components/finder.html)
 containing the files matching the glob pattern within the specified directory 
@@ -84,107 +116,74 @@ containing the files matching the glob pattern within the specified directory
 
 ### Exact Match
 
-Test if a string matches the glob pattern.
+Test if a string matches a glob pattern.
 
-  ```php
-  Glob::pattern('*.txt')->match('foo.txt'); // true
-  Glob::pattern('*.txt')->match('foo.log'); // false
-  ```
+```php
+Glob::match('*.txt', 'foo.txt'); // true
+Glob::match('*.txt', 'foo.log'); // false
+```
 
 ---
 
 ### Match Start
 
-Test if a string starts with the glob pattern.
+Test if a string starts with a glob pattern.
 
-  ```php
-  Glob::pattern('foo/*')->matchStart('foo/bar.txt'); // true
-  Glob::pattern('foo/*')->matchStart('bar/foo.txt'); // false
-  ```
+```php
+Glob::matchStart('foo/*', 'foo/bar.txt'); // true
+Glob::matchStart('foo/*', 'bar/foo.txt'); // false
+```
 
 ---
 
 ### Match End
 
-Test if a string ends with the glob pattern.
+Test if a string ends with a glob pattern.
 
-  ```php
-  Glob::pattern('**.txt')->matchEnd('foo/bar.txt'); // true
-  Glob::pattern('**.txt')->matchEnd('foo/bar.log'); // false
-  ```
+```php
+Glob::matchEnd('**.txt', 'foo/bar.txt'); // true
+Glob::matchEnd('**.txt', 'foo/bar.log'); // false
+```
 
 ---
 
 ### Match Within
 
-Test if a string contains the glob pattern.
+Test if a string contains a glob pattern.
 
-  ```php
-  Glob::pattern('bar')->matchWithin('foo/bar/baz.txt'); // true
-  Glob::pattern('bar')->matchWithin('foo/baz/qux.txt'); // false
-  ```
+```php
+Glob::matchWithin('bar', 'foo/bar/baz.txt'); // true
+Glob::matchWithin('bar', 'foo/baz/qux.txt'); // false
+```
 
 ---
 
 ### Filter an Array (of Strings)
 
-Filter an array of strings to values matching the glob pattern.
+Filter an array of strings to values matching a glob pattern.
 
-  ```php
-  Glob::pattern('**.txt')->filter([
-      'foo', 'foo.txt', 'bar.zip', 'foo/bar.png', 'foo/bar.txt',
-  ]);
+```php
+Glob::pattern('**.txt')->filter([
+    'foo', 'foo.txt', 'bar.zip', 'foo/bar.png', 'foo/bar.txt',
+]);
 
-  // Returns ['foo.txt', 'foo/bar.txt']
-  ```
+// Returns ['foo.txt', 'foo/bar.txt']
+```
 
 ---
 
 ### Reject an Array (of Strings)
 
-Filter an array of strings to values *not* matching the glob pattern.
+Filter an array of strings to values *not* matching a glob pattern.
 
-  ```php
-  Glob::pattern('**.txt')->reject([
-      'foo', 'foo.txt', 'bar.zip', 'foo/bar.png', 'foo/bar.txt',
-  ]);
+```php
+Glob::pattern('**.txt')->reject([
+    'foo', 'foo.txt', 'bar.zip', 'foo/bar.png', 'foo/bar.txt',
+]);
 
-  // Returns ['foo', 'bar.zip', 'foo/bar.png']
-  ```
+// Returns ['foo', 'bar.zip', 'foo/bar.png']
+```
 
----
-
-### To Regular Expression
-
-Convet the glob pattern to a regular expression pattern.
-
-  ```php
-  Glob::pattern('foo')->toRegex(); // Returns '#^foo$#'
-  Glob::pattern('foo/bar.txt')->toRegex(); // Returns '#^foo/bar\.txt$#'
-  Glob::pattern('file.{yml,yaml}')->toRegex(); // Returns '#^file\.(yml|yaml)$#'
-  ```
-
-  You can also control line anchors via the `$options` parameter.
-
-  ```php
-  Glob::pattern('foo')->toRegex(Glob::NO_ANCHORS); // Returns '#foo#'
-  Glob::pattern('foo')->toRegex(Glob::START_ANCHOR); // Returns '#^foo#'
-  Glob::pattern('foo')->toRegex(Glob::END_ANCHOR); // Returns '#foo$#'
-  Glob::pattern('foo')->toRegex(Glob::BOTH_ANCHORS); // Returns '#^foo$#'
-  Glob::pattern('foo')->toRegex(Glob::START_ANCHOR | Glob::END_ANCHOR); // Returns '#^foo$#'
-  ```
-
----
-
-### Escape
-
-Escape glob pattern characters from a string.
-
-  ```php
-  Glob::escape('What?'); // Returns 'What\?'
-  Glob::escape('*.{yml,yaml}'); // Returns '\*.\{yml\,yaml\}'
-  Glob::escape('[Gg]l*b.txt'); // Returns '\[Gg\]l\*b.txt'
-  ```
 
 Changelog
 ---------
@@ -194,7 +193,7 @@ A list of changes can be found on the [GitHub Releases](https://github.com/PHLAK
 Troubleshooting
 ---------------
 
-For general help and support join our [Spectrum Community](https://spectrum.chat/phlaknet) or reach out on [Twitter](https://twitter.com/PHLAK).
+For general help and support join our [GitHub Discussion](https://github.com/PHLAK/Splat/discussions) or reach out on [Twitter](https://twitter.com/PHLAK).
 
 Please report bugs to the [GitHub Issue Tracker](https://github.com/PHLAK/Splat/issues).
 

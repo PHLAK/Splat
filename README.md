@@ -163,7 +163,7 @@ Glob::matchWithin('bar', 'foo/baz/qux.txt'); // false
 Filter an array of strings to values matching a glob pattern.
 
 ```php
-Glob::pattern('**.txt')->filter([
+Glob::filter('**.txt', [
     'foo', 'foo.txt', 'bar.zip', 'foo/bar.png', 'foo/bar.txt',
 ]);
 
@@ -177,7 +177,7 @@ Glob::pattern('**.txt')->filter([
 Filter an array of strings to values *not* matching a glob pattern.
 
 ```php
-Glob::pattern('**.txt')->reject([
+Glob::reject('**.txt', [
     'foo', 'foo.txt', 'bar.zip', 'foo/bar.png', 'foo/bar.txt',
 ]);
 

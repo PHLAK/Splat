@@ -50,13 +50,13 @@ class Pattern
     }
 
     /** Escape glob pattern characters from a string. */
-    public static function escape(string $string): self
+    public static function escape(string $string): string
     {
-        return new self(str_replace([
+        return str_replace([
             '\\', '?', '*', '(', ')',  '[', ']', '^', '{', '}', ',',
         ], [
             '\\\\', '\\?', '\\*', '\\(', '\\)',  '\\[', '\\]', '\\^', '\\{', '\\}', '\\,',
-        ], $string));
+        ], $string);
     }
 
     /** Convert the pattern a regular expression. */

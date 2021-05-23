@@ -10,7 +10,7 @@
     <a href="https://packagist.org/packages/PHLAK/Splat"><img src="https://img.shields.io/packagist/v/PHLAK/Splat.svg?style=flat-square" alt="Latest Stable Version"></a>
     <a href="https://packagist.org/packages/PHLAK/Splat"><img src="https://img.shields.io/packagist/dt/PHLAK/Splat.svg?style=flat-square" alt="Total Downloads"></a>
     <a href="https://github.com/PHLAK/Splat/blob/master/LICENSE"><img src="https://img.shields.io/github/license/PHLAK/Splat?style=flat-square" alt="License"></a>
-    <a href="https://github.com/PHLAK/Splat/actions"><img alt="GitHub branch checks state" src="https://img.shields.io/github/checks-status/phlak/splat/master?style=flat-square"></a>
+    <a href="https://github.com/PHLAK/Splat/actions"><img alt="GitHub branch checks state" src="https://img.shields.io/github/checks-status/PHLAK/Splat/master?style=flat-square"></a>
 </p>
 
 ---
@@ -40,8 +40,15 @@ Patterns
 --------
 
 `Glob` methods accept a `$pattern` as the first parameter. This can be a string
-or an instance of `\PHLAK\Splat\Pattern`. A pattern string may contain one or
-more of the following special matching expressions.
+or an instance of `\PHLAK\Splat\Pattern`.
+
+```php
+$pattern = new Pattern(...);
+$pattern = Pattern::make(...);
+```
+
+A pattern string may contain one or more of the following special matching
+expressions.
 
 ### Matching Expressions
 
@@ -53,6 +60,7 @@ more of the following special matching expressions.
   - `[^abc]` matches any character not in the set (i.e. not `a`, `b` or `c`)
   - `[^a-c]` matches any character not in the range (i.e. not `a`, `b` or `c`)
   - `{foo,bar,baz}` matches any pattern in the set (i.e. `foo`, `bar` or `baz`)
+    - Sets may contain other matching patterns (i.e. `{foo,ba[rz]}`)
 
 ### Assertions
 
@@ -62,7 +70,7 @@ not followed by another pattern.
   - `(=foo)` matches any string that also contains `foo`
   - `(!foo)` matches any string that does not also contain `foo`
 
-For example, a pattern of `*.tar(!.{gz|xz})` will match a string ending with
+For example, a pattern of `*.tar(!.{gz,xz})` will match a string ending with
 `.tar` or `.tar.bz` but not `tar.gz` or `tar.xz`.
 
 ### Converting Patterns To Regular Expressions
@@ -75,7 +83,7 @@ Pattern::make('foo/bar.txt')->toRegex(); // Returns '#^foo/bar\.txt$#'
 Pattern::make('file.{yml,yaml}')->toRegex(); // Returns '#^file\.(yml|yaml)$#'
 ```
 
-  You can also control line anchors via the `$options` parameter.
+You can also control line anchors via the `$options` parameter.
 
 ```php
 Pattern::make('foo')->toRegex(Glob::NO_ANCHORS); // Returns '#foo#'
@@ -85,11 +93,12 @@ Pattern::make('foo')->toRegex(Glob::BOTH_ANCHORS); // Returns '#^foo$#'
 Pattern::make('foo')->toRegex(Glob::START_ANCHOR | Glob::END_ANCHOR); // Returns '#^foo$#'
 ```
 
----
+### Pattern Character Escaping
 
-### Escape
-
-Escape glob pattern characters from a string.
+Sometimes you may have characters in a string that shoulnd't be treated as
+matching expression characters. In those situations you can escape any character
+by preceeding it with a backslash (`\`). It's also possible to escape glob
+pattern characters from a string with the `Pattern::escape()` method.
 
 ```php
 Pattern::escape('What?'); // Returns 'What\?'

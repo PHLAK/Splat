@@ -75,7 +75,7 @@ For example, a pattern of `*.tar(!.{gz,xz})` will match a string ending with
 
 ### Converting Patterns To Regular Expressions
 
-Convet a glob pattern to a regular expression pattern.
+Glob patterns can be conveted to a regular expression pattern.
 
 ```php
 Pattern::make('foo')->toRegex(); // Returns '#^foo$#'
@@ -83,7 +83,7 @@ Pattern::make('foo/bar.txt')->toRegex(); // Returns '#^foo/bar\.txt$#'
 Pattern::make('file.{yml,yaml}')->toRegex(); // Returns '#^file\.(yml|yaml)$#'
 ```
 
-You can also control line anchors via the `$options` parameter.
+You can control regular expression line anchors via the `$options` parameter.
 
 ```php
 Pattern::make('foo')->toRegex(Glob::NO_ANCHORS); // Returns '#foo#'
@@ -97,13 +97,20 @@ Pattern::make('foo')->toRegex(Glob::START_ANCHOR | Glob::END_ANCHOR); // Returns
 
 Sometimes you may have characters in a string that shoulnd't be treated as
 matching expression characters. In those situations you can escape any character
-by preceeding it with a backslash (`\`). It's also possible to escape glob
-pattern characters from a string with the `Pattern::escape()` method.
+by preceeding it with a backslash (`\`).
 
 ```php
-Pattern::escape('What?'); // Returns 'What\?'
+Pattern::make('What is happening\?');
+Pattern::make('Wall-E \[2008\].mp4');
+```
+
+You may also escape glob pattern characters from a string programatically with
+the `Pattern::escape()` method.
+
+```php
+Pattern::escape('What is happening?'); // Returns 'What is happening\?'
 Pattern::escape('*.{yml,yaml}'); // Returns '\*.\{yml\,yaml\}'
-Pattern::escape('[Gg]l*b.txt'); // Returns '\[Gg\]l\*b.txt'
+Pattern::escape('[Ss]pl*t.txt'); // Returns '\[Ss\]pl\*t.txt'
 ```
 
 Methods

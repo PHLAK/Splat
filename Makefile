@@ -10,4 +10,4 @@ test: # Run coding standards/static analysis checks and tests
 		&& vendor/bin/phpunit --coverage-text
 
 coverage: # Generate an HTML coverage report
-	@vendor/bin/phpunit --coverage-html .coverage
+	@XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-html .coverage

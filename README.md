@@ -64,8 +64,8 @@ expressions.
 
 ### Assertions
 
-The following assertions can be use to assert that a string is followed by or
-not followed by another pattern.
+The following assertions can be use to assert that a string is followed by, or
+not followed by, another pattern.
 
   - `(=foo)` matches any string that also contains `foo`
   - `(!foo)` matches any string that does not also contain `foo`

@@ -75,7 +75,7 @@ For example, a pattern of `*.tar(!.{gz,xz})` will match a string ending with
 
 ### Converting Patterns To Regular Expressions
 
-Glob patterns can be conveted to a regular expression pattern.
+Glob patterns can be converted to a regular expression pattern.
 
 ```php
 Pattern::make('foo')->toRegex(); // Returns '#^foo$#'
@@ -95,7 +95,7 @@ Pattern::make('foo')->toRegex(Glob::START_ANCHOR | Glob::END_ANCHOR); // Returns
 
 ### Pattern Character Escaping
 
-Sometimes you may have characters in a string that shoulnd't be treated as
+Sometimes you may have characters in a string that shouldn't be treated as
 matching expression characters. In those situations you can escape any character
 by preceeding it with a backslash (`\`).
 
@@ -104,7 +104,7 @@ Pattern::make('What is happening\?');
 Pattern::make('Wall-E \[2008\].mp4');
 ```
 
-You may also escape glob pattern characters from a string programatically with
+You may also escape glob pattern characters from a string programmatically with
 the `Pattern::escape()` method.
 
 ```php

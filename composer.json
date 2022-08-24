@@ -28,7 +28,6 @@
         "phpunit/phpunit": "^8.0 || ^9.0",
         "psy/psysh": "^0.10 || ^0.11",
         "symfony/var-dumper": "^5.0",
-        "vimeo/psalm": "^4.7",
         "yoast/phpunit-polyfills": "^1.0"
     },
     "autoload": {

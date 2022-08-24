@@ -86,6 +86,9 @@ class Glob
      * Filter an array of strings to values matching the glob pattern.
      *
      * @param string|Pattern $pattern
+     * @param string[] $array
+     *
+     * @return string[]
      */
     public static function filter($pattern, array $array): array
     {
@@ -102,6 +105,9 @@ class Glob
      * Filter an array of strings to values not matching the glob pattern.
      *
      * @param string|Pattern $pattern
+     * @param string[] $array
+     *
+     * @return string[]
      */
     public static function reject($pattern, array $array): array
     {

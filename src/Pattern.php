@@ -22,7 +22,7 @@ class Pattern
     /** @var string The directory separator */
     protected static $directorySeparator = DIRECTORY_SEPARATOR;
 
-    /** @var array Memoization cache */
+    /** @var array<int, string> Memoization cache */
     private $cache = [];
 
     /** Create a new object. */

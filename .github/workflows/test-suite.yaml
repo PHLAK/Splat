@@ -28,7 +28,7 @@ jobs:
         run: composer update
 
       - name: Run Static Analysis
-        run: vendor/bin/psalm
+        run: vendor/bin/phpstan analyze
 
   tests:
     name: Tests

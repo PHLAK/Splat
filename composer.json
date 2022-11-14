@@ -20,8 +20,8 @@
         }
     ],
     "require": {
-        "php": ">=8.0",
-        "symfony/finder": "^6.0"
+        "php": ">=7.4",
+        "symfony/finder": "^5.0 || ^6.0"
     },
     "require-dev": {
         "phlak/coding-standards": "^2.0",

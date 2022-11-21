@@ -20,7 +20,7 @@ Glob-like file and pattern matching utility.
 Requirements
 ------------
 
-  - [PHP](https://www.php.net/) >= 7.2
+  - [PHP](https://www.php.net/) >= 7.4
 
 Installation
 ------------

@@ -16,9 +16,6 @@ class Pattern
     /** @const Add start and end anchors (i.e. '/^...$/') */
     public const BOTH_ANCHORS = self::START_ANCHOR | self::END_ANCHOR;
 
-    /** @var string The glob pattern */
-    protected $pattern;
-
     /** @var string The directory separator */
     protected static $directorySeparator = DIRECTORY_SEPARATOR;
 
@@ -26,9 +23,9 @@ class Pattern
     private $cache = [];
 
     /** Create a new object. */
-    public function __construct(string $pattern)
-    {
-        $this->pattern = $pattern;
+    public function __construct(
+        private string $pattern
+    ) {
     }
 
     /** Return the pattern as a string. */

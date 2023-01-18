@@ -42,6 +42,12 @@ class PatternTest extends TestCase
         $this->assertEquals('#^\\#$#', Pattern::make('\#')->toRegex());
     }
 
+    public function test_it_does_not_replace_glob_wildcards_in_character_classes(): void
+    {
+        $this->assertEquals('#^[\*\?\*\*]$#', Pattern::make('[\*\?\*\*]')->toRegex());
+        $this->assertEquals('#^[*?**]$#', Pattern::make('[*?**]')->toRegex());
+    }
+
     public function test_it_can_convert_a_complex_glob_pattern_to_a_regular_expressions(): void
     {
         $this->assertEquals('#^foo\.txt$#', Pattern::make('foo.txt')->toRegex());

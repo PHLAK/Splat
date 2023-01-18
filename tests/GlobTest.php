@@ -94,6 +94,14 @@ class GlobTest extends TestCase
         $this->assertFalse(Glob::match('[a-c][a-c]', 'abc'));
     }
 
+    public function test_it_matches_glob_wildcards_literally_in_character_classes(): void
+    {
+        $this->assertTrue(Glob::match('[*?**]', '*'));
+        $this->assertTrue(Glob::match('[*?**]', '?'));
+        $this->assertFalse(Glob::match('[*?**]', '.'));
+        $this->assertFalse(Glob::match('[*?**]', 'x'));
+    }
+
     public function test_it_matches_any_character_not_in_a_set(): void
     {
         $this->assertTrue(Glob::match('[^abc]', 'x'));

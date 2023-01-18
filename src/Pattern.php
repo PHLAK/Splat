@@ -78,16 +78,24 @@ class Pattern
                     break;
 
                 case '?':
-                    $pattern .= '.';
+                    if ($characterGroup > 0) {
+                        $pattern .= $char;
+                    } else {
+                        $pattern .= '.';
+                    }
 
                     break;
 
                 case '*':
-                    if (isset($this->pattern[$i + 1]) && $this->pattern[$i + 1] === '*') {
-                        $pattern .= '.*';
-                        ++$i;
+                    if ($characterGroup > 0) {
+                        $pattern .= $char;
                     } else {
-                        $pattern .= sprintf('[^%s]*', addslashes(static::$directorySeparator));
+                        if (isset($this->pattern[$i + 1]) && $this->pattern[$i + 1] === '*') {
+                            $pattern .= '.*';
+                            ++$i;
+                        } else {
+                            $pattern .= sprintf('[^%s]*', addslashes(static::$directorySeparator));
+                        }
                     }
 
                     break;

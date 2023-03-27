@@ -64,7 +64,7 @@ class Pattern
         }
 
         $pattern = '';
-        $characterGroup = 0;
+        $characterGroup = false;
         $lookaheadGroup = 0;
         $patternGroup = 0;
 
@@ -78,7 +78,7 @@ class Pattern
                     break;
 
                 case '?':
-                    if ($characterGroup > 0) {
+                    if ($characterGroup) {
                         $pattern .= $char;
                     } else {
                         $pattern .= '.';
@@ -87,7 +87,7 @@ class Pattern
                     break;
 
                 case '*':
-                    if ($characterGroup > 0) {
+                    if ($characterGroup) {
                         $pattern .= $char;
                     } else {
                         if (isset($this->pattern[$i + 1]) && $this->pattern[$i + 1] === '*') {
@@ -107,13 +107,13 @@ class Pattern
 
                 case '[':
                     $pattern .= $char;
-                    ++$characterGroup;
+                    $characterGroup = true;
 
                     break;
 
                 case ']':
-                    if ($characterGroup > 0) {
-                        --$characterGroup;
+                    if ($characterGroup) {
+                        $characterGroup = false;
                     }
 
                     $pattern .= $char;
@@ -121,7 +121,7 @@ class Pattern
                     break;
 
                 case '^':
-                    if ($characterGroup > 0) {
+                    if ($characterGroup) {
                         $pattern .= $char;
                     } else {
                         $pattern .= '\\' . $char;

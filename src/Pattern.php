@@ -76,16 +76,16 @@ class Pattern
 
             switch ($char) {
                 case '\\':
-                    $pattern .= '\\' . $this->pattern[++$i];
+                    if ($characterGroup) {
+                        $pattern .= '\\\\';
+                    } else {
+                        $pattern .= '\\' . $this->pattern[++$i];
+                    }
 
                     break;
 
                 case '?':
-                    if ($characterGroup) {
-                        $pattern .= $char;
-                    } else {
-                        $pattern .= '.';
-                    }
+                    $pattern .= $characterGroup ? $char : '.';
 
                     break;
 

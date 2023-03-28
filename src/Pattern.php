@@ -73,11 +73,7 @@ class Pattern
 
             switch ($char) {
                 case '\\':
-                    if ($characterGroup) {
-                        $pattern .= '\\\\';
-                    } else {
-                        $pattern .= '\\' . $this->pattern[++$i];
-                    }
+                    $pattern .= $characterGroup ? '\\\\' : '\\' . $this->pattern[++$i];
 
                     break;
 
@@ -89,13 +85,15 @@ class Pattern
                 case '*':
                     if ($characterGroup) {
                         $pattern .= $char;
+
+                        break;
+                    }
+
+                    if (isset($this->pattern[$i + 1]) && $this->pattern[$i + 1] === '*') {
+                        $pattern .= '.*';
+                        ++$i;
                     } else {
-                        if (isset($this->pattern[$i + 1]) && $this->pattern[$i + 1] === '*') {
-                            $pattern .= '.*';
-                            ++$i;
-                        } else {
-                            $pattern .= sprintf('[^%s]*', addslashes(static::$directorySeparator));
-                        }
+                        $pattern .= sprintf('[^%s]*', addslashes(static::$directorySeparator));
                     }
 
                     break;
@@ -121,11 +119,7 @@ class Pattern
                     break;
 
                 case '^':
-                    if ($characterGroup) {
-                        $pattern .= $char;
-                    } else {
-                        $pattern .= '\\' . $char;
-                    }
+                    $pattern .= $characterGroup ? $char : '\\' . $char;
 
                     break;
 
@@ -137,7 +131,7 @@ class Pattern
 
                 case '}':
                     if ($patternGroup > 0) {
-                        $pattern .= ')';
+                        $pattern .= $characterGroup ? $char : ')';
                         --$patternGroup;
                     } else {
                         $pattern .= $char;
@@ -147,7 +141,7 @@ class Pattern
 
                 case ',':
                     if ($patternGroup > 0) {
-                        $pattern .= '|';
+                        $pattern .= $characterGroup ? $char : '|';
                     } else {
                         $pattern .= $char;
                     }
@@ -159,7 +153,7 @@ class Pattern
                         $pattern .= sprintf('(?%s', $this->pattern[++$i]);
                         ++$lookaheadGroup;
                     } else {
-                        $pattern .= '\\' . $char;
+                        $pattern .= $characterGroup ? $char : '\\' . $char;
                     }
 
                     break;
@@ -169,14 +163,14 @@ class Pattern
                         --$lookaheadGroup;
                         $pattern .= $char;
                     } else {
-                        $pattern .= '\\' . $char;
+                        $pattern .= $characterGroup ? $char : '\\' . $char;
                     }
 
                     break;
 
                 default:
                     if (in_array($char, ['.', '|', '+', '$'])) {
-                        $pattern .= '\\' . $char;
+                        $pattern .= $characterGroup ? $char : '\\' . $char;
                     } else {
                         $pattern .= $char;
                     }

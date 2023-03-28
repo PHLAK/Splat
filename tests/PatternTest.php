@@ -54,6 +54,7 @@ class PatternTest extends TestCase
         $this->assertEquals('#^[fbw]oo\.txt$#', Pattern::make('[fbw]oo.txt')->toRegex());
         $this->assertEquals('#^[^fbw]oo\.txt$#', Pattern::make('[^fbw]oo.txt')->toRegex());
         $this->assertEquals('#^[[?*\\\\]$#', Pattern::make('[[?*\]')->toRegex());
+        $this->assertEquals('#^[.\\\\]$#', Pattern::make('[.\]')->toRegex());
         $this->assertEquals('#^foo}bar\.txt$#', Pattern::make('foo}bar.txt')->toRegex());
         $this->assertEquals('#^foo\^bar\.txt$#', Pattern::make('foo^bar.txt')->toRegex());
         $this->assertEquals('#^foo,bar\.txt$#', Pattern::make('foo,bar.txt')->toRegex());

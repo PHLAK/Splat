@@ -63,27 +63,28 @@ class Pattern
             return $this->cache[$options];
         }
 
+        $length = strlen($this->pattern);
         $pattern = '';
-        $characterGroup = false;
-        $lookaheadGroup = 0;
+        $inCharacterGroup = false;
         $patternGroup = 0;
+        $lookaheadGroup = 0;
 
-        for ($i = 0; $i < strlen($this->pattern); ++$i) {
+        for ($i = 0; $i < $length; ++$i) {
             $char = $this->pattern[$i];
 
             switch ($char) {
                 case '\\':
-                    $pattern .= $characterGroup ? '\\\\' : '\\' . $this->pattern[++$i];
+                    $pattern .= $inCharacterGroup ? '\\\\' : '\\' . $this->pattern[++$i];
 
                     break;
 
                 case '?':
-                    $pattern .= $characterGroup ? $char : '.';
+                    $pattern .= $inCharacterGroup ? $char : '.';
 
                     break;
 
                 case '*':
-                    if ($characterGroup) {
+                    if ($inCharacterGroup) {
                         $pattern .= $char;
 
                         break;
@@ -105,13 +106,13 @@ class Pattern
 
                 case '[':
                     $pattern .= $char;
-                    $characterGroup = true;
+                    $inCharacterGroup = true;
 
                     break;
 
                 case ']':
-                    if ($characterGroup) {
-                        $characterGroup = false;
+                    if ($inCharacterGroup) {
+                        $inCharacterGroup = false;
                     }
 
                     $pattern .= $char;
@@ -119,7 +120,7 @@ class Pattern
                     break;
 
                 case '^':
-                    $pattern .= $characterGroup ? $char : '\\' . $char;
+                    $pattern .= $inCharacterGroup ? $char : '\\' . $char;
 
                     break;
 
@@ -131,7 +132,7 @@ class Pattern
 
                 case '}':
                     if ($patternGroup > 0) {
-                        $pattern .= $characterGroup ? $char : ')';
+                        $pattern .= $inCharacterGroup ? $char : ')';
                         --$patternGroup;
                     } else {
                         $pattern .= $char;
@@ -141,7 +142,7 @@ class Pattern
 
                 case ',':
                     if ($patternGroup > 0) {
-                        $pattern .= $characterGroup ? $char : '|';
+                        $pattern .= $inCharacterGroup ? $char : '|';
                     } else {
                         $pattern .= $char;
                     }
@@ -153,7 +154,7 @@ class Pattern
                         $pattern .= sprintf('(?%s', $this->pattern[++$i]);
                         ++$lookaheadGroup;
                     } else {
-                        $pattern .= $characterGroup ? $char : '\\' . $char;
+                        $pattern .= $inCharacterGroup ? $char : '\\' . $char;
                     }
 
                     break;
@@ -163,14 +164,14 @@ class Pattern
                         --$lookaheadGroup;
                         $pattern .= $char;
                     } else {
-                        $pattern .= $characterGroup ? $char : '\\' . $char;
+                        $pattern .= $inCharacterGroup ? $char : '\\' . $char;
                     }
 
                     break;
 
                 default:
                     if (in_array($char, ['.', '|', '+', '$'])) {
-                        $pattern .= $characterGroup ? $char : '\\' . $char;
+                        $pattern .= $inCharacterGroup ? $char : '\\' . $char;
                     } else {
                         $pattern .= $char;
                     }

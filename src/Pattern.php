@@ -69,116 +69,152 @@ class Pattern
         $patternGroup = 0;
         $lookaheadGroup = 0;
 
+        // note: in PHP strings, '\\' means one backslash, '\\\\' means two backslashes
+
         for ($i = 0; $i < $length; ++$i) {
             $char = $this->pattern[$i];
 
             switch ($char) {
                 case '\\':
-                    $pattern .= $inCharacterGroup ? '\\\\' : '\\' . $this->pattern[++$i];
+                    if (isset($this->pattern[$i + 1])) {
+                        // the "\" escapes the next character
+                        $pattern .= '\\' . $this->pattern[++$i];
+                    } else {
+                        // the "\" is the last character of the pattern, which is erroneous, let's discard it
+                        // rather than letting it unexpectedly escape a character appended after the loop
 
-                    break;
+                        // previous code would trigger an "undefined array key" PHP warning,
+                        // and unexpectedly escape the character appended after the loop
 
-                case '?':
-                    $pattern .= $inCharacterGroup ? $char : '.';
+                        // let's make the erroneous array access, to trigger the PHP warning as the previous code does
+                        $this->pattern[$i + 1]; // @phpstan-ignore-line
 
-                    break;
+                        // TODO: as we are able to detect this mistake,
+                        // consider throwing a custom exception in future Splat versions
+                    }
 
-                case '*':
-                    if ($inCharacterGroup) {
+                    continue 2;
+
+                case '#': // pattern delimiter
+                    $pattern .= '\\#';
+
+                    continue 2;
+            }
+
+            if ($inCharacterGroup) {
+                switch ($char) {
+                    case ']':
+                        $pattern .= $char;
+                        $inCharacterGroup = false;
+
+                        break;
+
+                    default:
                         $pattern .= $char;
 
                         break;
-                    }
+                }
+            } else {
+                switch ($char) {
+                    case '?':
+                        $pattern .= '.';
 
-                    if (isset($this->pattern[$i + 1]) && $this->pattern[$i + 1] === '*') {
-                        $pattern .= '.*';
-                        ++$i;
-                    } else {
-                        $pattern .= sprintf('[^%s]*', addslashes(static::$directorySeparator));
-                    }
+                        break;
 
-                    break;
+                    case '*':
+                        if (isset($this->pattern[$i + 1]) && $this->pattern[$i + 1] === '*') {
+                            $pattern .= '.*';
+                            ++$i;
+                        } else {
+                            $pattern .= sprintf('[^%s]*', addslashes(static::$directorySeparator));
+                        }
 
-                case '#':
-                    $pattern .= '\#';
+                        break;
 
-                    break;
-
-                case '[':
-                    $pattern .= $char;
-                    $inCharacterGroup = true;
-
-                    break;
-
-                case ']':
-                    if ($inCharacterGroup) {
-                        $inCharacterGroup = false;
-                    }
-
-                    $pattern .= $char;
-
-                    break;
-
-                case '^':
-                    $pattern .= $inCharacterGroup ? $char : '\\' . $char;
-
-                    break;
-
-                case '{':
-                    $pattern .= '(';
-                    ++$patternGroup;
-
-                    break;
-
-                case '}':
-                    if ($patternGroup > 0) {
-                        $pattern .= $inCharacterGroup ? $char : ')';
-                        --$patternGroup;
-                    } else {
+                    case '[':
                         $pattern .= $char;
-                    }
+                        $inCharacterGroup = true;
 
-                    break;
+                        // "]" does not need to be escaped when it is the first character
+                        // of the class (optionally preceded by the negation "^"), e.g. []abc] or [^]abc]
+                        // TODO: add unit tests for this
+                        if (isset($this->pattern[$i + 1]) && $this->pattern[$i + 1] === '^') {
+                            $pattern .= '^';
+                            ++$i;
+                        }
+                        if (isset($this->pattern[$i + 1]) && $this->pattern[$i + 1] === ']') {
+                            $pattern .= '\\]';
+                            ++$i;
+                        }
 
-                case ',':
-                    if ($patternGroup > 0) {
-                        $pattern .= $inCharacterGroup ? $char : '|';
-                    } else {
-                        $pattern .= $char;
-                    }
+                        break;
 
-                    break;
+                    case '{':
+                        $pattern .= '(';
+                        ++$patternGroup;
 
-                case '(':
-                    if (isset($this->pattern[$i + 1]) && in_array($this->pattern[$i + 1], ['=', '!'])) {
-                        $pattern .= sprintf('(?%s', $this->pattern[++$i]);
-                        ++$lookaheadGroup;
-                    } else {
-                        $pattern .= $inCharacterGroup ? $char : '\\' . $char;
-                    }
+                        break;
 
-                    break;
+                    case '}':
+                        if ($patternGroup > 0) {
+                            $pattern .= ')';
+                            --$patternGroup;
+                        } else {
+                            $pattern .= $char;
+                        }
 
-                case ')':
-                    if ($lookaheadGroup > 0) {
-                        --$lookaheadGroup;
-                        $pattern .= $char;
-                    } else {
-                        $pattern .= $inCharacterGroup ? $char : '\\' . $char;
-                    }
+                        break;
 
-                    break;
+                    case ',':
+                        if ($patternGroup > 0) {
+                            $pattern .= '|';
+                        } else {
+                            $pattern .= $char;
+                        }
 
-                default:
-                    if (in_array($char, ['.', '|', '+', '$'])) {
-                        $pattern .= $inCharacterGroup ? $char : '\\' . $char;
-                    } else {
-                        $pattern .= $char;
-                    }
+                        break;
 
-                    break;
+                    case '(':
+                        if (isset($this->pattern[$i + 1]) && in_array($this->pattern[$i + 1], ['=', '!'])) {
+                            $pattern .= sprintf('(?%s', $this->pattern[++$i]);
+                            ++$lookaheadGroup;
+                        } else {
+                            $pattern .= '\\' . $char;
+                        }
+
+                        break;
+
+                    case ')':
+                        if ($lookaheadGroup > 0) {
+                            --$lookaheadGroup;
+                            $pattern .= $char;
+                        } else {
+                            $pattern .= '\\' . $char;
+                        }
+
+                        break;
+
+                    default:
+                        if (in_array($char, ['.', '|', '+', '^', '$'])) {
+                            $pattern .= '\\' . $char;
+                        } else {
+                            $pattern .= $char;
+                        }
+
+                        break;
+                }
             }
         }
+
+        /*
+        if ($inCharacterGroup || $patternGroup > 0 || $lookaheadGroup > 0) {
+            // error: unclosed group,
+            // which will trigger a "preg_match(): compilation failed" PHP warning later
+
+            // TODO: as we are able to detect these mistakes,
+            // consider throwing a custom exception in future Splat versions
+        }
+        */
 
         if ($options & self::START_ANCHOR) {
             $pattern = '^' . $pattern;

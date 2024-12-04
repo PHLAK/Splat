@@ -4,19 +4,23 @@ namespace Tests;
 
 use PHLAK\Splat\Glob;
 use PHLAK\Splat\Pattern;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
-/** @covers \PHLAK\Splat\Glob */
+#[CoversClass(Glob::class)]
 class GlobTest extends TestCase
 {
-    public function test_it_matches_a_literal_value(): void
+    #[Test]
+    public function it_matches_a_literal_value(): void
     {
         $this->assertTrue(Glob::match('foo', 'foo'));
         $this->assertFalse(Glob::match('bar', 'foo'));
     }
 
-    public function test_it_matches_a_single_character(): void
+    #[Test]
+    public function it_matches_a_single_character(): void
     {
         $this->assertTrue(Glob::match('?', 'f'));
         $this->assertTrue(Glob::match('??', 'fo'));
@@ -26,7 +30,8 @@ class GlobTest extends TestCase
         $this->assertFalse(Glob::match('???', 'f'));
     }
 
-    public function test_it_matches_zero_or_more_characters_excluding_slash(): void
+    #[Test]
+    public function it_matches_zero_or_more_characters_excluding_slash(): void
     {
         $this->assertTrue(Glob::match('*', 'foo'));
         $this->assertTrue(Glob::match('*', 'foo\\bar'));
@@ -40,7 +45,8 @@ class GlobTest extends TestCase
         $this->assertFalse(Glob::match('*/*.txt', 'foo/bar/baz.txt'));
     }
 
-    public function test_it_matches_zero_or_more_characeters_including_slash(): void
+    #[Test]
+    public function it_matches_zero_or_more_characeters_including_slash(): void
     {
         $this->assertTrue(Glob::match('**', 'foo'));
         $this->assertTrue(Glob::match('**', 'foo.txt'));
@@ -54,7 +60,8 @@ class GlobTest extends TestCase
         $this->assertFalse(Glob::match('**/*.txt', 'foo.txt'));
     }
 
-    public function test_it_matches_a_single_character_from_a_set(): void
+    #[Test]
+    public function it_matches_a_single_character_from_a_set(): void
     {
         $this->assertTrue(Glob::match('[abc]', 'a'));
         $this->assertTrue(Glob::match('[abc]', 'b'));
@@ -74,7 +81,8 @@ class GlobTest extends TestCase
         $this->assertFalse(Glob::match('[abc][abc]', 'abc'));
     }
 
-    public function test_it_matches_a_single_character_in_a_range(): void
+    #[Test]
+    public function it_matches_a_single_character_in_a_range(): void
     {
         $this->assertTrue(Glob::match('[a-c]', 'a'));
         $this->assertTrue(Glob::match('[a-c]', 'b'));
@@ -94,7 +102,8 @@ class GlobTest extends TestCase
         $this->assertFalse(Glob::match('[a-c][a-c]', 'abc'));
     }
 
-    public function test_it_matches_glob_wildcards_literally_in_character_classes(): void
+    #[Test]
+    public function it_matches_glob_wildcards_literally_in_character_classes(): void
     {
         $this->assertTrue(Glob::match('[[?*\]', '?'));
         $this->assertTrue(Glob::match('[[?*\]', '*'));
@@ -102,7 +111,8 @@ class GlobTest extends TestCase
         $this->assertFalse(Glob::match('[[?*\]', 'x'));
     }
 
-    public function test_it_matches_any_character_not_in_a_set(): void
+    #[Test]
+    public function it_matches_any_character_not_in_a_set(): void
     {
         $this->assertTrue(Glob::match('[^abc]', 'x'));
         $this->assertTrue(Glob::match('[^abc]', 'z'));
@@ -121,7 +131,8 @@ class GlobTest extends TestCase
         $this->assertFalse(Glob::match('[^abc][^xyz]', 'foo'));
     }
 
-    public function test_it_matches_any_character_not_in_a_range(): void
+    #[Test]
+    public function it_matches_any_character_not_in_a_range(): void
     {
         $this->assertTrue(Glob::match('[^a-c]', 'x'));
         $this->assertTrue(Glob::match('[^a-c]', 'z'));
@@ -140,7 +151,8 @@ class GlobTest extends TestCase
         $this->assertFalse(Glob::match('[^a-c][^x-z]', 'foo'));
     }
 
-    public function test_it_matches_a_pattern_from_a_set(): void
+    #[Test]
+    public function it_matches_a_pattern_from_a_set(): void
     {
         $this->assertTrue(Glob::match('{foo,bar,baz}', 'foo'));
         $this->assertTrue(Glob::match('{foo,bar,baz}', 'bar'));
@@ -155,25 +167,29 @@ class GlobTest extends TestCase
         $this->assertFalse(Glob::match('{foo,bar,baz}', 'qux'));
     }
 
-    public function test_it_matches_the_start_of_a_string(): void
+    #[Test]
+    public function it_matches_the_start_of_a_string(): void
     {
         $this->assertTrue(Glob::matchStart('foo/*', 'foo/bar.txt'));
         $this->assertFalse(Glob::matchStart('foo/*', 'bar/foo.txt'));
     }
 
-    public function test_it_matches_the_end_of_a_string(): void
+    #[Test]
+    public function it_matches_the_end_of_a_string(): void
     {
         $this->assertTrue(Glob::matchEnd('**.txt', 'foo/bar.txt'));
         $this->assertFalse(Glob::matchEnd('**.txt', 'foo/bar.log'));
     }
 
-    public function test_it_matches_within_a_string(): void
+    #[Test]
+    public function it_matches_within_a_string(): void
     {
         $this->assertTrue(Glob::matchWithin('*/bar/*', 'foo/bar/baz.txt'));
         $this->assertFalse(Glob::matchWithin('*/bar/*', 'foo/baz/qux.txt'));
     }
 
-    public function test_it_matches_zero_or_more_characters_excluding_back_slash(): void
+    #[Test]
+    public function it_matches_zero_or_more_characters_excluding_back_slash(): void
     {
         Pattern::directorySeparator('\\');
 
@@ -191,7 +207,8 @@ class GlobTest extends TestCase
         $this->assertFalse(Glob::match('*\\*.txt', 'foo\\bar\\baz.txt'));
     }
 
-    public function test_it_matches_zero_or_more_characeters_including_back_slash(): void
+    #[Test]
+    public function it_matches_zero_or_more_characeters_including_back_slash(): void
     {
         Pattern::directorySeparator('\\');
 
@@ -207,7 +224,8 @@ class GlobTest extends TestCase
         $this->assertFalse(Glob::match('**\\\\*.txt', 'foo.txt'));
     }
 
-    public function test_it_can_match_a_string_with_a_lookahead(): void
+    #[Test]
+    public function it_can_match_a_string_with_a_lookahead(): void
     {
         $this->assertTrue(Glob::matchWithin('*.tar(=.gz)', 'foo.tar.gz'));
         $this->assertFalse(Glob::matchWithin('*.tar(=.gz)', 'foo.tar.xz'));
@@ -219,7 +237,8 @@ class GlobTest extends TestCase
         $this->assertFalse(Glob::matchWithin('*.tar(=.{gz,xz})', 'foo.tar'));
     }
 
-    public function test_it_can_match_a_string_with_a_negative_lookahead(): void
+    #[Test]
+    public function it_can_match_a_string_with_a_negative_lookahead(): void
     {
         $this->assertTrue(Glob::matchWithin('*.tar(!.gz)', 'foo.tar'));
         $this->assertTrue(Glob::matchWithin('*.tar(!.gz)', 'foo.tar.xz'));
@@ -231,7 +250,8 @@ class GlobTest extends TestCase
         $this->assertFalse(Glob::matchWithin('*.tar(!.{gz,xz})', 'foo.tar.xz'));
     }
 
-    public function test_it_can_filter_an_array(): void
+    #[Test]
+    public function it_can_filter_an_array(): void
     {
         $filtered = Glob::filter('**.txt', [
             'foo', 'foo.txt', 'bar.zip', 'foo/bar.png', 'foo/bar.txt',
@@ -240,7 +260,8 @@ class GlobTest extends TestCase
         $this->assertEquals(['foo.txt', 'foo/bar.txt'], array_values($filtered));
     }
 
-    public function test_it_can_reject_an_array(): void
+    #[Test]
+    public function it_can_reject_an_array(): void
     {
         $rejected = Glob::reject('**.txt', [
             'foo', 'foo.txt', 'bar.zip', 'foo/bar.png', 'foo/bar.txt',
@@ -249,7 +270,8 @@ class GlobTest extends TestCase
         $this->assertEquals(['foo', 'bar.zip', 'foo/bar.png'], array_values($rejected));
     }
 
-    public function test_it_can_return_a_list_of_files_matching_the_pattern(): void
+    #[Test]
+    public function it_can_return_a_list_of_files_matching_the_pattern(): void
     {
         $files = Glob::in('**.txt', __DIR__ . '/_files');
 

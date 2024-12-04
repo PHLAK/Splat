@@ -27,7 +27,7 @@
         "php": ">=8.2",
         "phlak/coding-standards": "^3.0",
         "phpstan/phpstan": "^2.0",
-        "phpunit/phpunit": "^9.0",
+        "phpunit/phpunit": "^11.0",
         "psy/psysh": "^0.12.5",
         "symfony/var-dumper": "^6.0",
         "yoast/phpunit-polyfills": "^3.0"

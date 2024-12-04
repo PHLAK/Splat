@@ -10,7 +10,7 @@
     <a href="https://packagist.org/packages/PHLAK/Splat"><img src="https://img.shields.io/packagist/v/PHLAK/Splat.svg?style=flat-square" alt="Latest Stable Version"></a>
     <a href="https://packagist.org/packages/PHLAK/Splat"><img src="https://img.shields.io/packagist/dt/PHLAK/Splat.svg?style=flat-square" alt="Total Downloads"></a>
     <a href="https://github.com/PHLAK/Splat/blob/master/LICENSE"><img src="https://img.shields.io/github/license/PHLAK/Splat?style=flat-square" alt="License"></a>
-    <a href="https://github.com/PHLAK/Splat/actions"><img src="https://img.shields.io/github/actions/workflow/status/PHLAK/Splat/test-suite.yaml?style=flat-square&label=Tests" alt="Tests Status"></a>
+    <a href="https://github.com/PHLAK/Splat/actions"><img src="https://img.shields.io/github/actions/workflow/status/PHLAK/Splat/test-suite.yaml?style=flat-square&label=tests" alt="Tests Status"></a>
 </p>
 
 ---

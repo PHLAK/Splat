@@ -25,8 +25,7 @@ class Pattern
     /** Create a new object. */
     public function __construct(
         private string $pattern
-    ) {
-    }
+    ) {}
 
     /** Return the pattern as a string. */
     public function __toString(): string

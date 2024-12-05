@@ -57,8 +57,8 @@ expressions.
   - `**` matches zero or more characters including `/` (`\` on Windows)
   - `[abc]` matches a single character from the set (i.e. `a`, `b` or `c`)
   - `[a-c]` matches a single character in the range (i.e. `a`, `b` or `c`)
-  - `[^abc]` matches any character not in the set (i.e. not `a`, `b` or `c`)
-  - `[^a-c]` matches any character not in the range (i.e. not `a`, `b` or `c`)
+  - `[!abc]` matches any character not in the set (i.e. not `a`, `b` or `c`)
+  - `[!a-c]` matches any character not in the range (i.e. not `a`, `b` or `c`)
   - `{foo,bar,baz}` matches any pattern in the set (i.e. `foo`, `bar` or `baz`)
     - Sets may contain other matching patterns (i.e. `{foo,ba[rz]}`)
 

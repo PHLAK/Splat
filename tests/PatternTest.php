@@ -66,11 +66,10 @@ class PatternTest extends TestCase
         $this->assertEquals('#^([^/]*|.*/[^/]*)\.txt$#', Pattern::make('{*,**/*}.txt')->toRegex());
         $this->assertEquals('#^file\.(yml|yaml)$#', Pattern::make('file.{yml,yaml}')->toRegex());
         $this->assertEquals('#^[fbw]oo\.txt$#', Pattern::make('[fbw]oo.txt')->toRegex());
-        $this->assertEquals('#^[^fbw]oo\.txt$#', Pattern::make('[^fbw]oo.txt')->toRegex());
+        $this->assertEquals('#^[^fbw]oo\.txt$#', Pattern::make('[!fbw]oo.txt')->toRegex());
         $this->assertEquals('#^[[?*\\\\]$#', Pattern::make('[[?*\]')->toRegex());
         $this->assertEquals('#^[.\\\\]$#', Pattern::make('[.\]')->toRegex());
         $this->assertEquals('#^foo}bar\.txt$#', Pattern::make('foo}bar.txt')->toRegex());
-        $this->assertEquals('#^foo\^bar\.txt$#', Pattern::make('foo^bar.txt')->toRegex());
         $this->assertEquals('#^foo,bar\.txt$#', Pattern::make('foo,bar.txt')->toRegex());
         $this->assertEquals('#^foo/.*/[^/]*\.txt$#', Pattern::make('foo/**/*.txt')->toRegex());
     }
@@ -111,7 +110,7 @@ class PatternTest extends TestCase
         $this->assertEquals('\\*', Pattern::escape('*'));
         $this->assertEquals('\\[', Pattern::escape('['));
         $this->assertEquals('\\]', Pattern::escape(']'));
-        $this->assertEquals('\\^', Pattern::escape('^'));
+        $this->assertEquals('\\!', Pattern::escape('!'));
         $this->assertEquals('\\{', Pattern::escape('{'));
         $this->assertEquals('\\}', Pattern::escape('}'));
         $this->assertEquals('\\,', Pattern::escape(','));
@@ -119,8 +118,8 @@ class PatternTest extends TestCase
         $this->assertEquals('\\)', Pattern::escape(')'));
 
         $this->assertEquals(
-            '\\\\\\?\\*\\(\\)\\[\\]\\^\\{\\}\\,',
-            Pattern::escape('\\?*()[]^{},')
+            '\\\\\\?\\*\\(\\)\\[\\]\\!\\{\\}\\,',
+            Pattern::escape('\\?*()[]!{},')
         );
     }
 }

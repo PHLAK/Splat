@@ -114,41 +114,41 @@ class GlobTest extends TestCase
     #[Test]
     public function it_matches_any_character_not_in_a_set(): void
     {
-        $this->assertTrue(Glob::match('[^abc]', 'x'));
-        $this->assertTrue(Glob::match('[^abc]', 'z'));
+        $this->assertTrue(Glob::match('[!abc]', 'x'));
+        $this->assertTrue(Glob::match('[!abc]', 'z'));
 
-        $this->assertTrue(Glob::match('[^abc][^xyz]', 'za'));
-        $this->assertTrue(Glob::match('[^abc][^xyz]', 'ya'));
+        $this->assertTrue(Glob::match('[!abc][!xyz]', 'za'));
+        $this->assertTrue(Glob::match('[!abc][!xyz]', 'ya'));
 
-        $this->assertTrue(Glob::match('[^abc]oo', 'foo'));
-        $this->assertTrue(Glob::match('[^abc]oo', 'zoo'));
+        $this->assertTrue(Glob::match('[!abc]oo', 'foo'));
+        $this->assertTrue(Glob::match('[!abc]oo', 'zoo'));
 
-        $this->assertFalse(Glob::match('[^abc]', 'a'));
-        $this->assertFalse(Glob::match('[^abc]', 'b'));
-        $this->assertFalse(Glob::match('[^abc]', 'c'));
-        $this->assertFalse(Glob::match('[^abc]oo', 'boo'));
-        $this->assertFalse(Glob::match('[^abc][^xyz]', 'cz'));
-        $this->assertFalse(Glob::match('[^abc][^xyz]', 'foo'));
+        $this->assertFalse(Glob::match('[!abc]', 'a'));
+        $this->assertFalse(Glob::match('[!abc]', 'b'));
+        $this->assertFalse(Glob::match('[!abc]', 'c'));
+        $this->assertFalse(Glob::match('[!abc]oo', 'boo'));
+        $this->assertFalse(Glob::match('[!abc][!xyz]', 'cz'));
+        $this->assertFalse(Glob::match('[!abc][!xyz]', 'foo'));
     }
 
     #[Test]
     public function it_matches_any_character_not_in_a_range(): void
     {
-        $this->assertTrue(Glob::match('[^a-c]', 'x'));
-        $this->assertTrue(Glob::match('[^a-c]', 'z'));
+        $this->assertTrue(Glob::match('[!a-c]', 'x'));
+        $this->assertTrue(Glob::match('[!a-c]', 'z'));
 
-        $this->assertTrue(Glob::match('[^a-c][^x-z]', 'za'));
-        $this->assertTrue(Glob::match('[^a-c][^x-z]', 'ya'));
+        $this->assertTrue(Glob::match('[!a-c][!x-z]', 'za'));
+        $this->assertTrue(Glob::match('[!a-c][!x-z]', 'ya'));
 
-        $this->assertTrue(Glob::match('[^a-c]oo', 'foo'));
-        $this->assertTrue(Glob::match('[^a-c]oo', 'zoo'));
+        $this->assertTrue(Glob::match('[!a-c]oo', 'foo'));
+        $this->assertTrue(Glob::match('[!a-c]oo', 'zoo'));
 
-        $this->assertFalse(Glob::match('[^a-c]', 'a'));
-        $this->assertFalse(Glob::match('[^a-c]', 'b'));
-        $this->assertFalse(Glob::match('[^a-c]', 'c'));
-        $this->assertFalse(Glob::match('[^a-c]oo', 'boo'));
-        $this->assertFalse(Glob::match('[^a-c][^x-z]', 'cz'));
-        $this->assertFalse(Glob::match('[^a-c][^x-z]', 'foo'));
+        $this->assertFalse(Glob::match('[!a-c]', 'a'));
+        $this->assertFalse(Glob::match('[!a-c]', 'b'));
+        $this->assertFalse(Glob::match('[!a-c]', 'c'));
+        $this->assertFalse(Glob::match('[!a-c]oo', 'boo'));
+        $this->assertFalse(Glob::match('[!a-c][!x-z]', 'cz'));
+        $this->assertFalse(Glob::match('[!a-c][!x-z]', 'foo'));
     }
 
     #[Test]

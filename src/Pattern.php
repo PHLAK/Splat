@@ -49,9 +49,9 @@ class Pattern
     public static function escape(string $string): string
     {
         return str_replace([
-            '\\', '?', '*', '(', ')',  '[', ']', '^', '{', '}', ',',
+            '\\', '?', '*', '(', ')',  '[', ']', '!', '{', '}', ',',
         ], [
-            '\\\\', '\\?', '\\*', '\\(', '\\)',  '\\[', '\\]', '\\^', '\\{', '\\}', '\\,',
+            '\\\\', '\\?', '\\*', '\\(', '\\)',  '\\[', '\\]', '\\!', '\\{', '\\}', '\\,',
         ], $string);
     }
 
@@ -102,6 +102,11 @@ class Pattern
 
                     break;
 
+                case '^':
+                    $pattern .= '\^';
+
+                    break;
+
                 case '[':
                     $pattern .= $char;
                     $characterGroup = true;
@@ -117,8 +122,8 @@ class Pattern
 
                     break;
 
-                case '^':
-                    $pattern .= $characterGroup ? $char : '\\' . $char;
+                case '!':
+                    $pattern .= $characterGroup ? '^' : $char;
 
                     break;
 

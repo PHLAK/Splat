@@ -11,11 +11,9 @@ class Glob
     /**
      * Get a list of files in a directory by a glob pattern.
      *
-     * @param string|Pattern $pattern
-     *
      * @throws DirectoryNotFoundException
      */
-    public static function in($pattern, string $path): Finder
+    public static function in(string|Pattern $pattern, string $path): Finder
     {
         if (is_string($pattern)) {
             $pattern = new Pattern($pattern);
@@ -26,12 +24,8 @@ class Glob
         });
     }
 
-    /**
-     * Test if a string matches the glob pattern.
-     *
-     * @param string|Pattern $pattern
-     */
-    public static function match($pattern, string $string): bool
+    /** Test if a string matches the glob pattern. */
+    public static function match(string|Pattern $pattern, string $string): bool
     {
         if (is_string($pattern)) {
             $pattern = new Pattern($pattern);
@@ -40,12 +34,8 @@ class Glob
         return (bool) preg_match($pattern->toRegex(), $string);
     }
 
-    /**
-     * Test if a string starts with the glob pattern.
-     *
-     * @param string|Pattern $pattern
-     */
-    public static function matchStart($pattern, string $string): bool
+    /** Test if a string starts with the glob pattern. */
+    public static function matchStart(string|Pattern $pattern, string $string): bool
     {
         if (is_string($pattern)) {
             $pattern = new Pattern($pattern);
@@ -54,12 +44,8 @@ class Glob
         return (bool) preg_match($pattern->toRegex(Pattern::START_ANCHOR), $string);
     }
 
-    /**
-     * Test if a string ends with the glob pattern.
-     *
-     * @param string|Pattern $pattern
-     */
-    public static function matchEnd($pattern, string $string): bool
+    /** Test if a string ends with the glob pattern. */
+    public static function matchEnd(string|Pattern $pattern, string $string): bool
     {
         if (is_string($pattern)) {
             $pattern = new Pattern($pattern);
@@ -68,12 +54,8 @@ class Glob
         return (bool) preg_match($pattern->toRegex(Pattern::END_ANCHOR), $string);
     }
 
-    /**
-     * Test if any part of a string matches the glob pattern.
-     *
-     * @param string|Pattern $pattern
-     */
-    public static function matchWithin($pattern, string $string): bool
+    /** Test if any part of a string matches the glob pattern. */
+    public static function matchWithin(string|Pattern $pattern, string $string): bool
     {
         if (is_string($pattern)) {
             $pattern = new Pattern($pattern);
@@ -85,12 +67,11 @@ class Glob
     /**
      * Filter an array of strings to values matching the glob pattern.
      *
-     * @param string|Pattern $pattern
      * @param string[] $array
      *
      * @return string[]
      */
-    public static function filter($pattern, array $array): array
+    public static function filter(string|Pattern $pattern, array $array): array
     {
         if (is_string($pattern)) {
             $pattern = new Pattern($pattern);
@@ -104,12 +85,11 @@ class Glob
     /**
      * Filter an array of strings to values not matching the glob pattern.
      *
-     * @param string|Pattern $pattern
      * @param string[] $array
      *
      * @return string[]
      */
-    public static function reject($pattern, array $array): array
+    public static function reject(string|Pattern $pattern, array $array): array
     {
         if (is_string($pattern)) {
             $pattern = new Pattern($pattern);

@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use PHLAK\Splat\Anchors;
 use PHLAK\Splat\Pattern;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
@@ -87,11 +88,10 @@ class PatternTest extends TestCase
     #[Test]
     public function regular_expression_start_and_end_anchors_are_configurable(): void
     {
-        $this->assertEquals('#foo#', Pattern::make('foo')->toRegex(Pattern::NO_ANCHORS));
-        $this->assertEquals('#^foo#', Pattern::make('foo')->toRegex(Pattern::START_ANCHOR));
-        $this->assertEquals('#foo$#', Pattern::make('foo')->toRegex(Pattern::END_ANCHOR));
-        $this->assertEquals('#^foo$#', Pattern::make('foo')->toRegex(Pattern::BOTH_ANCHORS));
-        $this->assertEquals('#^foo$#', Pattern::make('foo')->toRegex(Pattern::START_ANCHOR | Pattern::END_ANCHOR));
+        $this->assertEquals('#foo#', Pattern::make('foo')->toRegex(Anchors::NONE));
+        $this->assertEquals('#^foo#', Pattern::make('foo')->toRegex(Anchors::START));
+        $this->assertEquals('#foo$#', Pattern::make('foo')->toRegex(Anchors::END));
+        $this->assertEquals('#^foo$#', Pattern::make('foo')->toRegex(Anchors::BOTH));
     }
 
     #[Test]

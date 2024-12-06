@@ -83,14 +83,16 @@ Pattern::make('foo/bar.txt')->toRegex(); // Returns '#^foo/bar\.txt$#'
 Pattern::make('file.{yml,yaml}')->toRegex(); // Returns '#^file\.(yml|yaml)$#'
 ```
 
-You can control regular expression line anchors via the `$options` parameter.
+You can control regular expression line anchors via the `$anchors` parameter.
 
 ```php
-Pattern::make('foo')->toRegex(Glob::NO_ANCHORS); // Returns '#foo#'
-Pattern::make('foo')->toRegex(Glob::START_ANCHOR); // Returns '#^foo#'
-Pattern::make('foo')->toRegex(Glob::END_ANCHOR); // Returns '#foo$#'
-Pattern::make('foo')->toRegex(Glob::BOTH_ANCHORS); // Returns '#^foo$#'
-Pattern::make('foo')->toRegex(Glob::START_ANCHOR | Glob::END_ANCHOR); // Returns '#^foo$#'
+use PHLAK\Splat\Anchors;
+use PHLAK\Splat\Pattern;
+
+Pattern::make('foo')->toRegex(Anchors::NONE); // Returns '#foo#'
+Pattern::make('foo')->toRegex(Anchors::START); // Returns '#^foo#'
+Pattern::make('foo')->toRegex(Anchors::END); // Returns '#foo$#'
+Pattern::make('foo')->toRegex(Anchors::BOTH); // Returns '#^foo$#'
 ```
 
 ### Pattern Character Escaping

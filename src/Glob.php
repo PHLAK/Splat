@@ -41,7 +41,7 @@ class Glob
             $pattern = new Pattern($pattern);
         }
 
-        return (bool) preg_match($pattern->toRegex(Pattern::START_ANCHOR), $string);
+        return (bool) preg_match($pattern->toRegex(Anchors::START), $string);
     }
 
     /** Test if a string ends with the glob pattern. */
@@ -51,7 +51,7 @@ class Glob
             $pattern = new Pattern($pattern);
         }
 
-        return (bool) preg_match($pattern->toRegex(Pattern::END_ANCHOR), $string);
+        return (bool) preg_match($pattern->toRegex(Anchors::END), $string);
     }
 
     /** Test if any part of a string matches the glob pattern. */
@@ -61,7 +61,7 @@ class Glob
             $pattern = new Pattern($pattern);
         }
 
-        return (bool) preg_match($pattern->toRegex(Pattern::NO_ANCHORS), $string);
+        return (bool) preg_match($pattern->toRegex(Anchors::NONE), $string);
     }
 
     /**

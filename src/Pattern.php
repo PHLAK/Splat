@@ -4,22 +4,10 @@ namespace PHLAK\Splat;
 
 class Pattern
 {
-    /** @const Do not add start or end anchors */
-    public const NO_ANCHORS = 0;
-
-    /** @const Add start anchor (i.e. '/^.../') */
-    public const START_ANCHOR = 1;
-
-    /** @const Add end anchor (i.e. '/...$/') */
-    public const END_ANCHOR = 2;
-
-    /** @const Add start and end anchors (i.e. '/^...$/') */
-    public const BOTH_ANCHORS = self::START_ANCHOR | self::END_ANCHOR;
-
     /** @var string The directory separator */
     protected static $directorySeparator = DIRECTORY_SEPARATOR;
 
-    /** @var array<int, string> Memoization cache */
+    /** @var array<string, string> Memoization cache */
     private $cache = [];
 
     /** Create a new object. */
@@ -56,10 +44,10 @@ class Pattern
     }
 
     /** Convert the pattern a regular expression. */
-    public function toRegex(int $options = self::BOTH_ANCHORS): string
+    public function toRegex(Anchors $anchors = Anchors::BOTH): string
     {
-        if (isset($this->cache[$options])) {
-            return $this->cache[$options];
+        if (isset($this->cache[$anchors->name])) {
+            return $this->cache[$anchors->name];
         }
 
         $pattern = '';
@@ -183,14 +171,14 @@ class Pattern
             }
         }
 
-        if ($options & self::START_ANCHOR) {
+        if (in_array($anchors, [Anchors::BOTH, Anchors::START])) {
             $pattern = '^' . $pattern;
         }
 
-        if ($options & self::END_ANCHOR) {
+        if (in_array($anchors, [Anchors::BOTH, Anchors::END])) {
             $pattern = $pattern . '$';
         }
 
-        return $this->cache[$options] = sprintf('#%s#', $pattern);
+        return $this->cache[$anchors->name] = sprintf('#%s#', $pattern);
     }
 }

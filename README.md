@@ -211,7 +211,7 @@ A list of changes can be found on the [GitHub Releases](https://github.com/PHLAK
 Troubleshooting
 ---------------
 
-For general help and support join our [GitHub Discussion](https://github.com/PHLAK/Splat/discussions) or reach out on [Twitter](https://twitter.com/PHLAK).
+For general help and support join our [GitHub Discussion](https://github.com/PHLAK/Splat/discussions) or reach out on [Bluesky](https://bsky.app/profile/phlak.dev).
 
 Please report bugs to the [GitHub Issue Tracker](https://github.com/PHLAK/Splat/issues).
 

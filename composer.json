@@ -25,7 +25,7 @@
     },
     "require-dev": {
         "php": ">=8.2",
-        "phlak/coding-standards": "^3.0",
+        "phlak/coding-standards": "^3.0 || ^5.0",
         "phpstan/phpstan": "^2.0",
         "phpunit/phpunit": "^11.0",
         "psy/psysh": "^0.12.5",

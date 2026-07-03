@@ -2,13 +2,26 @@ version: 2
 
 updates:
   - package-ecosystem: composer
-    directory: "/"
+    directory: /
+    groups:
+      PHP Dependencies:
+        patterns: ['*']
+        update-types: [minor, patch]
+    labels: [Dependencies, PHP]
     schedule:
       interval: monthly
+    cooldown:
+      default-days: 2
     assignees: [PHLAK]
 
   - package-ecosystem: github-actions
-    directory: "/"
+    directory: /
+    groups:
+      GitHub Actions:
+        patterns: ['*']
+    labels: [Dependencies, GitHub Actions]
     schedule:
       interval: monthly
+    cooldown:
+      default-days: 2
     assignees: [PHLAK]

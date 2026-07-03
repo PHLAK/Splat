@@ -1,6 +1,9 @@
 name: Splat Test Suite
 on: [push, pull_request, workflow_dispatch]
 
+env:
+  PHP_VERSION: 8.5
+
 jobs:
   coding-standards:
     name: Coding Standards
@@ -16,7 +19,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.4
+          php-version: ${{ env.PHP_VERSION }}
 
       - name: Install PHP Dependencies
         run: composer install --no-interaction --no-progress --no-scripts --prefer-dist
@@ -35,7 +38,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.4
+          php-version: ${{ env.PHP_VERSION }}
 
       - name: Install PHP Dependencies
         run: composer install --no-interaction --no-progress --no-scripts --prefer-dist
@@ -49,7 +52,7 @@ jobs:
 
     strategy:
       matrix:
-        php-versions: ['8.2', '8.3', '8.4']
+        php-versions: ['8.2', '8.3', '8.4', '8.5']
 
     steps:
       - name: Checkout Repository
